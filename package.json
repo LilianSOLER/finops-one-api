@@ -1,10 +1,10 @@
 {
   "name": "finops-one-api",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "API to centralize all the data from the each cloud provider",
+  "author": "Polytech Grenoble",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "GPL-3.0",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
