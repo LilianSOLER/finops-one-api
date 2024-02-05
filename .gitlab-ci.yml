@@ -50,7 +50,6 @@ docker-build:
     only:
         - main
         - develop
-        - feature/2-setup-a-ci-cd
     services:
       - docker:24.0.5-dind
     needs:
@@ -132,7 +131,6 @@ deploy-staging:
     - docker-build
   only:
     - develop
-    - feature/2-setup-a-ci-cd
 
 
 
