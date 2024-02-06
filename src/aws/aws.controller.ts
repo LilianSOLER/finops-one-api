@@ -7,7 +7,22 @@ export class AwsController{
     constructor(private awsService : AwsService){}
 
     @Get()
-    getCost(@Res() res : Response){
-        return this.awsService.getCost();
+    getCost(){
+        const result =  this.awsService.getCost();
+        console.log(result);
+        result
+        .then(
+            (result)=>{
+                
+                console.log(result.ResultsByTime); // object
+                return result.ResultsByTime;
+            }
+        )
+        .catch(
+            (error) => {
+                console.log(error);
+            }
+        )
+        return result;
     }
 }

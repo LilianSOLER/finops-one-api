@@ -36,13 +36,12 @@ export class AwsService{
             if (err) {
                 console.error(err, err.stack);
             } else {
-                console.log(data);
+                //console.log(data);
                 return data;
             }
-           
-            
         });
-        return data;
+
+        return data.promise();
 
     }
 
