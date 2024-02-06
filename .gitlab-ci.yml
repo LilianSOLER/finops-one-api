@@ -154,7 +154,6 @@ sonarqube-check:
     - master
     - main
     - develop
-    - feature/3-setup-quality-code-control
 
 sonarqube-vulnerability-report:
   stage: sonarqube-vulnerability-report
@@ -166,7 +165,6 @@ sonarqube-vulnerability-report:
     - master
     - main
     - develop
-    - feature/3-setup-quality-code-control
   artifacts:
     expire_in: 1 day
     reports:
