@@ -1,0 +1,6 @@
+echo "Running pre-commit hook"
+echo "Running build, format, and test"
+npm run build
+npm run format
+npm run test
+echo "Done"
