@@ -42,3 +42,8 @@ pnpm-lock.yaml
 # Environment files
 .env
 .env.*
+
+# Prisma migrations
+prisma/migrations/20240206132726_init/
+prisma/migrations/20240206164406_update_user/
+prisma/migrations/migration_lock.toml
