@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -13,14 +15,26 @@ import { JwtGuard } from '../auth/guard';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { User } from '@prisma/client';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserEntity } from './entities';
 
 @ApiTags('users')
+@ApiResponse({
+  status: HttpStatus.INTERNAL_SERVER_ERROR,
+  description: 'Internal server error',
+})
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(JwtGuard)
+  @ApiOperation({ summary: 'Get user info' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User info',
+    type: UserEntity,
+  })
+  @HttpCode(HttpStatus.OK)
   @Get('me')
   getMe(@GetUser() user: User) {
     return user;
