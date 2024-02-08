@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from '../auth/auth.service';
+import * as argon from 'argon2';
 
 @Injectable()
 export class UserService {
@@ -37,19 +38,67 @@ export class UserService {
     return res;
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll() {
+    const user = await this.prismaService.user.findMany();
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (updateUserDto.password) {
+      const hash = await argon.hash(updateUserDto.password);
+      // @ts-expect-error password must be replaced with hashedPassword
+      delete updateUserDto.password;
+
+      return this.prismaService.user.update({
+        where: { id },
+        data: { ...updateUserDto, hashedPassword: hash },
+      });
+    }
+
+    // @ts-expect-error password must be replaced with hashedPassword
+    delete updateUserDto.password;
+
+    return this.prismaService.user.update({
+      where: { id },
+      data: updateUserDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return this.prismaService.user.delete({
+      where: { id },
+    });
   }
 }

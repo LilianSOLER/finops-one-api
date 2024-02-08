@@ -9,6 +9,10 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
   description: 'Bad request',
 })
 @ApiResponse({
+  status: HttpStatus.UNAUTHORIZED,
+  description: 'Unauthorized',
+})
+@ApiResponse({
   status: HttpStatus.INTERNAL_SERVER_ERROR,
   description: 'Internal server error',
 })
