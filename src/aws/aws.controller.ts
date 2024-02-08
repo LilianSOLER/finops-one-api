@@ -1,5 +1,6 @@
-import { Controller,Get, Res } from "@nestjs/common";
+import { Controller,Get, Body, Post } from "@nestjs/common";
 import { AwsService } from "./aws.service";
+import { CredentialDto } from "./dto/credential.dto";
 
 @Controller('aws')
 export class AwsController{
@@ -24,5 +25,10 @@ export class AwsController{
             }
         )
         return result;
+    }
+    
+    @Post('credentials')
+    addCredentials(@Body() dto : CredentialDto){
+        const result = this.awsService.addCredentials(dto);
     }
 }

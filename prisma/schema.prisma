@@ -1,0 +1,35 @@
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Aws_metrics{
+    id Int @id @default(autoincrement())
+    timePeriod DateTime
+    service String
+    amortizedCost Float
+    blendedCost Float
+    unblendedCost Float
+    netUnblendedCost Float
+    netAmortizedCost Float
+    normalizedUsageAmount Int
+    usageQuantity Int
+    //ajouter le projet auquel sont liés ces métriques
+}
+
+model Aws_credentials{
+  id Int @id @default(autoincrement())
+  createAt DateTime
+  accessKeyId String @unique
+  secretAccessKey String
+
+    //ajouter le compte, le user ou le projet auquel sont associés ces credentials
+}
