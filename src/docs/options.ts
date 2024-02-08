@@ -1,4 +1,5 @@
 import { DocumentBuilder } from '@nestjs/swagger';
+
 const config = new DocumentBuilder()
   .setTitle('Finops One API')
   .setContact('Finops One', '', 'polytech.projet.s10@gmail.com')
@@ -7,6 +8,8 @@ const config = new DocumentBuilder()
   .setDescription('The Finops One API description')
   .setVersion('0.0.1')
   .addTag('home')
+  .addTag('auth')
+  .addTag('users')
   .build();
 
 export { config };

@@ -13,7 +13,9 @@ import { JwtGuard } from '../auth/guard';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { User } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('users')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
