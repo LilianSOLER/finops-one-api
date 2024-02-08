@@ -4,6 +4,14 @@ import { AuthDto, SigninResponseDto, SignupResponseDto } from './dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('auth')
+@ApiResponse({
+  status: HttpStatus.BAD_REQUEST,
+  description: 'Bad request',
+})
+@ApiResponse({
+  status: HttpStatus.INTERNAL_SERVER_ERROR,
+  description: 'Internal server error',
+})
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -18,14 +26,6 @@ export class AuthController {
     status: HttpStatus.FORBIDDEN,
     description: 'Invalid credentials',
   })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Bad request',
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error',
-  })
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')
   signup(@Body() dto: AuthDto) {
@@ -37,18 +37,6 @@ export class AuthController {
     status: HttpStatus.OK,
     description: 'User has been successfully logged in',
     type: SigninResponseDto,
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Invalid credentials',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Bad request',
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error',
   })
   @HttpCode(HttpStatus.OK)
   @Post('signin')
