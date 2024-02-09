@@ -13,6 +13,7 @@ const config = new DocumentBuilder()
   .addTag('home')
   .addTag('auth')
   .addTag('users')
+  .addTag('projects')
 
   .addBearerAuth()
 
