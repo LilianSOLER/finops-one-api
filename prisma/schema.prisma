@@ -20,4 +20,43 @@ model User {
 
   firstName String?
   lastName  String?
+
+  projectsLink    Project[]
+  UserProjectLink UserProjectLink[]
+}
+
+model Project {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+
+  usersLink       User[]
+  UserProjectLink UserProjectLink[]
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model UserProjectLink {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role     Role    @default(MEMBER)
+  jobTitle String?
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  projectId String  @unique
+  Project   Project @relation(fields: [projectId], references: [id])
+
+  assignedAt DateTime @default(now())
+  assignedBy String
 }
