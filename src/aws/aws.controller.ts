@@ -28,7 +28,16 @@ export class AwsController{
     }
     
     @Post('credentials')
-    addCredentials(@Body() dto : CredentialDto){
-        const result = this.awsService.addCredentials(dto);
+    async addCredentials(@Body() dto : CredentialDto){
+        const result = await this.awsService.addCredentials(dto);
+        console.log(result);
+        return result;
+    }
+
+    @Get('credentials')
+    async getCredentials(){
+        const result = await this.awsService.getCredentials();
+        console.log(result);
+        return result;
     }
 }
