@@ -18,7 +18,7 @@ import {
   GetMeResponseDto,
   UpdateUserDto,
 } from './dto';
-import { GetUser } from '../auth/decorator/get-user.decorator';
+import { GetUser } from '../auth/decorator/';
 import { User } from '@prisma/client';
 import {
   ApiBearerAuth,

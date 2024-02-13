@@ -14,11 +14,27 @@ export const createProjectMembers = async () => {
       { length: Math.floor(Math.random() * 5) },
       () => users[Math.floor(Math.random() * users.length)],
     );
+
+    if (randomUsers.some((user) => user.id === project.ownerId)) {
+      randomUsers.splice(
+        randomUsers.findIndex((user) => user.id === project.ownerId),
+        1,
+      );
+    }
+
     return randomUsers.map((user) => ({
       userId: user.id,
       projectId: project.id,
     }));
   });
+
+  const owners = allProjects.map((project) => ({
+    userId: project.ownerId,
+    projectId: project.id,
+    role: 'OWNER',
+  }));
+
+  projectMembers.push(owners);
 
   try {
     await prisma.$transaction(

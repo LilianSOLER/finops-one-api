@@ -18,9 +18,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtGuard } from '../auth/guard';
-import { User } from '@prisma/client';
-import { GetUser } from '../auth/decorator/get-user.decorator';
+import { JwtGuard, ProjectRolesGuard } from '../auth/guard';
+import { ProjectRole, User } from '@prisma/client';
+import { GetUser, Roles } from '../auth/decorator/';
 import { ProjectEntity } from './entities';
 
 @ApiTags('projects')
@@ -33,7 +33,7 @@ import { ProjectEntity } from './entities';
   description: 'Internal server error',
 })
 @ApiBearerAuth()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, ProjectRolesGuard)
 @Controller('projects')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
@@ -93,6 +93,7 @@ export class ProjectController {
     description: 'Projects not found',
   })
   @HttpCode(HttpStatus.OK)
+  @Roles(ProjectRole.ADMIN, ProjectRole.OWNER)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
     return this.projectService.update(id, updateProjectDto);
@@ -109,6 +110,7 @@ export class ProjectController {
     description: 'Projects not found',
   })
   @HttpCode(HttpStatus.OK)
+  @Roles(ProjectRole.ADMIN, ProjectRole.OWNER)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.projectService.remove(id);
