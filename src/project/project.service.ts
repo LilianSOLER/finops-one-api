@@ -5,17 +5,29 @@ import {
 } from '@nestjs/common';
 import { CreateProjectDto, UpdateProjectDto } from './dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class ProjectService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createProjectDto: CreateProjectDto) {
+  async create(createProjectDto: CreateProjectDto, owner: User) {
     try {
       const user = await this.prisma.project.create({
         data: {
           name: createProjectDto.name,
           description: createProjectDto.description,
+          ownerId: owner.id,
+          projectMembers: {
+            create: {
+              userId: owner.id,
+              role: 'OWNER',
+            },
+          },
+        },
+        include: {
+          owner: true,
+          projectMembers: true,
         },
       });
       return user;
@@ -27,7 +39,12 @@ export class ProjectService {
   async findAll() {
     const project = await this.prisma.project.findMany({
       include: {
-        usersLink: true,
+        owner: true,
+        projectMembers: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 
@@ -41,6 +58,14 @@ export class ProjectService {
   async findOne(id: string) {
     const project = await this.prisma.project.findUnique({
       where: { id },
+      include: {
+        owner: true,
+        projectMembers: {
+          include: {
+            user: true,
+          },
+        },
+      },
     });
 
     if (!project) {
@@ -53,6 +78,14 @@ export class ProjectService {
   async update(id: string, updateProjectDto: UpdateProjectDto) {
     const project = await this.prisma.project.findUnique({
       where: { id },
+      include: {
+        owner: true,
+        projectMembers: {
+          include: {
+            user: true,
+          },
+        },
+      },
     });
 
     if (!project) {
@@ -64,6 +97,14 @@ export class ProjectService {
       data: {
         name: updateProjectDto.name,
         description: updateProjectDto.description,
+      },
+      include: {
+        owner: true,
+        projectMembers: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
   }
@@ -78,6 +119,14 @@ export class ProjectService {
     }
     return this.prisma.project.delete({
       where: { id },
+      include: {
+        owner: true,
+        projectMembers: {
+          include: {
+            user: true,
+          },
+        },
+      },
     });
   }
 }

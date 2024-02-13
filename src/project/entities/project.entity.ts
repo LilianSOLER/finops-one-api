@@ -1,6 +1,7 @@
 import { Project } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserEntity } from '../../user/entities';
+import { ProjectMembersEntity } from './project-members.entity';
 
 export class ProjectEntity implements Project {
   @ApiProperty({ type: 'string', format: 'uuid' })
@@ -18,6 +19,22 @@ export class ProjectEntity implements Project {
   @ApiProperty({ type: 'string', format: 'date-time' })
   updatedAt: Date;
 
-  @ApiProperty({ type: UserEntity, isArray: true, nullable: true })
-  usersLink?: UserEntity[];
+  @ApiProperty({
+    type: 'string',
+    format: 'uuid',
+    description: 'Owner of the project',
+  })
+  ownerId: string;
+
+  @ApiProperty({
+    type: () => UserEntity,
+    description: 'Owner of the project',
+  })
+  owner: UserEntity;
+
+  @ApiProperty({
+    type: () => [ProjectMembersEntity],
+    description: 'Members of the project',
+  })
+  members: ProjectMembersEntity[];
 }

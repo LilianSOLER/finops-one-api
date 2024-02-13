@@ -11,11 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import {
-  CreateProjectDto,
-  CreateProjectResponseDto,
-  UpdateProjectDto,
-} from './dto';
+import { CreateProjectDto, UpdateProjectDto } from './dto';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -23,6 +19,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtGuard } from '../auth/guard';
+import { User } from '@prisma/client';
+import { GetUser } from '../auth/decorator/get-user.decorator';
+import { ProjectEntity } from './entities';
 
 @ApiTags('projects')
 @ApiResponse({
@@ -43,19 +42,19 @@ export class ProjectController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Project created',
-    type: CreateProjectResponseDto,
+    type: ProjectEntity,
   })
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  create(@Body() createProjectDto: CreateProjectDto) {
-    return this.projectService.create(createProjectDto);
+  create(@Body() createProjectDto: CreateProjectDto, @GetUser() user: User) {
+    return this.projectService.create(createProjectDto, user);
   }
 
   @ApiOperation({ summary: 'Get all projects' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Projects list',
-    type: [CreateProjectResponseDto],
+    type: [ProjectEntity],
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
@@ -71,7 +70,7 @@ export class ProjectController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Project',
-    type: CreateProjectResponseDto,
+    type: ProjectEntity,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
@@ -87,7 +86,7 @@ export class ProjectController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Project updated',
-    type: CreateProjectResponseDto,
+    type: ProjectEntity,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
@@ -103,6 +102,7 @@ export class ProjectController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Project deleted',
+    type: ProjectEntity,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
