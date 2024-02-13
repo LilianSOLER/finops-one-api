@@ -21,8 +21,8 @@ model User {
   firstName String?
   lastName  String?
 
-  projectsLink    Project[]
-  UserProjectLink UserProjectLink[]
+  project       Project[]
+  projectMember ProjectMember[]
 }
 
 model Project {
@@ -33,30 +33,28 @@ model Project {
   name        String
   description String?
 
-  usersLink       User[]
-  UserProjectLink UserProjectLink[]
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId String
+
+  projectMembers ProjectMember[]
 }
 
-enum Role {
-  OWNER
-  ADMIN
-  MEMBER
-}
-
-model UserProjectLink {
+model ProjectMember {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  role     Role    @default(MEMBER)
-  jobTitle String?
+  role ProjectRole @default(MEMBER)
 
-  userId String @unique
   user   User   @relation(fields: [userId], references: [id])
+  userId String
 
-  projectId String  @unique
-  Project   Project @relation(fields: [projectId], references: [id])
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId String
+}
 
-  assignedAt DateTime @default(now())
-  assignedBy String
+enum ProjectRole {
+  OWNER
+  ADMIN
+  MEMBER
 }
