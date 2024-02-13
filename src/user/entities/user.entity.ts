@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserEntity implements User {
@@ -22,4 +22,7 @@ export class UserEntity implements User {
 
   @ApiProperty({ type: 'string', format: 'date-time' })
   updatedAt: Date;
+
+  @ApiProperty({ enum: UserRole })
+  role: UserRole;
 }

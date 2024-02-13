@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtGuard, ProjectRolesGuard } from '../auth/guard';
 import { ProjectRole, User } from '@prisma/client';
-import { GetUser, Roles } from '../auth/decorator/';
+import { GetUser, ProjectRoles } from '../auth/decorator/';
 import { ProjectEntity } from './entities';
 
 @ApiTags('projects')
@@ -93,7 +93,7 @@ export class ProjectController {
     description: 'Projects not found',
   })
   @HttpCode(HttpStatus.OK)
-  @Roles(ProjectRole.ADMIN, ProjectRole.OWNER)
+  @ProjectRoles(ProjectRole.ADMIN, ProjectRole.OWNER)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
     return this.projectService.update(id, updateProjectDto);
@@ -110,7 +110,7 @@ export class ProjectController {
     description: 'Projects not found',
   })
   @HttpCode(HttpStatus.OK)
-  @Roles(ProjectRole.ADMIN, ProjectRole.OWNER)
+  @ProjectRoles(ProjectRole.ADMIN, ProjectRole.OWNER)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.projectService.remove(id);

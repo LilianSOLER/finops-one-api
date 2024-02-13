@@ -21,6 +21,8 @@ model User {
   firstName String?
   lastName  String?
 
+  role UserRole @default(USER)
+
   project       Project[]
   projectMember ProjectMember[]
 }
@@ -57,4 +59,9 @@ enum ProjectRole {
   OWNER
   ADMIN
   MEMBER
+}
+
+enum UserRole {
+  ADMIN
+  USER
 }

@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { JwtGuard } from '../auth/guard';
+import { JwtGuard, RolesGuard } from '../auth/guard';
 import {
   CreateUserDto,
   CreateUserResponseDto,
@@ -19,7 +19,7 @@ import {
   UpdateUserDto,
 } from './dto';
 import { GetUser } from '../auth/decorator/';
-import { User } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -27,6 +27,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { UserEntity } from './entities';
+import { Roles } from '../auth/decorator/roles.decorator';
 
 @ApiTags('users')
 @ApiResponse({
@@ -38,7 +39,8 @@ import { UserEntity } from './entities';
   description: 'Internal server error',
 })
 @ApiBearerAuth()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -50,6 +52,7 @@ export class UserController {
     type: GetMeResponseDto,
   })
   @HttpCode(HttpStatus.OK)
+  @Roles(UserRole.ADMIN, UserRole.USER)
   @Get('me')
   getMe(@GetUser() user: User) {
     return this.userService.getMe(user);
