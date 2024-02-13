@@ -3,6 +3,7 @@ import { CreateUserDto, UpdateUserDto } from './dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from '../auth/auth.service';
 import * as argon from 'argon2';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -99,6 +100,19 @@ export class UserService {
     }
     return this.prismaService.user.delete({
       where: { id },
+    });
+  }
+
+  getMe(user: User) {
+    return this.prismaService.user.findUnique({
+      where: { id: user.id },
+      include: {
+        projectMember: {
+          include: {
+            project: true,
+          },
+        },
+      },
     });
   }
 }

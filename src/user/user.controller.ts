@@ -43,8 +43,6 @@ import { UserEntity } from './entities';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // TODO: Add RBAC for this controller
-
   @ApiOperation({ summary: 'Get user info' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -54,7 +52,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @Get('me')
   getMe(@GetUser() user: User) {
-    return user;
+    return this.userService.getMe(user);
   }
 
   @ApiOperation({ summary: 'Create user' })
