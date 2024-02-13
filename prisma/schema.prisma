@@ -12,15 +12,15 @@ datasource db {
 
 model Aws_metrics{
     id Int @id @default(autoincrement())
-    timePeriod DateTime
-    service String
-    amortizedCost Float
-    blendedCost Float
-    unblendedCost Float
-    netUnblendedCost Float
-    netAmortizedCost Float
-    normalizedUsageAmount Int
-    usageQuantity Int
+    timePeriod DateTime?
+    service String?
+    amortizedCost Float?
+    blendedCost Float?
+    unblendedCost Float?
+    netUnblendedCost Float?
+    netAmortizedCost Float?
+    normalizedUsageAmount Int?
+    usageQuantity Int?
     //ajouter le projet auquel sont liés ces métriques
 }
 

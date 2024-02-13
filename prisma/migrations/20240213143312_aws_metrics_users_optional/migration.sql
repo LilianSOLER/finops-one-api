@@ -1,0 +1,10 @@
+-- AlterTable
+ALTER TABLE "Aws_metrics" ALTER COLUMN "timePeriod" DROP NOT NULL,
+ALTER COLUMN "service" DROP NOT NULL,
+ALTER COLUMN "amortizedCost" DROP NOT NULL,
+ALTER COLUMN "blendedCost" DROP NOT NULL,
+ALTER COLUMN "unblendedCost" DROP NOT NULL,
+ALTER COLUMN "netUnblendedCost" DROP NOT NULL,
+ALTER COLUMN "netAmortizedCost" DROP NOT NULL,
+ALTER COLUMN "normalizedUsageAmount" DROP NOT NULL,
+ALTER COLUMN "usageQuantity" DROP NOT NULL;

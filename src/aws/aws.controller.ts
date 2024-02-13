@@ -1,4 +1,4 @@
-import { Controller,Get, Body, Post } from "@nestjs/common";
+import { Controller,Get, Body, Post, InternalServerErrorException } from "@nestjs/common";
 import { AwsService } from "./aws.service";
 import { CredentialDto } from "./dto/credential.dto";
 
@@ -8,22 +8,8 @@ export class AwsController{
     constructor(private awsService : AwsService){}
 
     @Get()
-    getCost(){
-        const result =  this.awsService.getCost();
-        console.log(result);
-        result
-        .then(
-            (result)=>{
-                
-                console.log(result.ResultsByTime); // object
-                return result.ResultsByTime;
-            }
-        )
-        .catch(
-            (error) => {
-                console.log(error);
-            }
-        )
+    async getCost(){
+        const result = await this.awsService.getCost();
         return result;
     }
     

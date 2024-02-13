@@ -64,7 +64,7 @@ export class AuthService {
     const check = await argon.verify(user.hash,authDto.password);
 
     //return token
-    return this.signToken(user.email,user.id);
+    return await this.signToken(user.email,user.id);
   }
 
   async signToken(
