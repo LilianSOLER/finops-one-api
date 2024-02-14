@@ -18,6 +18,7 @@ export class ProjectService {
           name: createProjectDto.name,
           description: createProjectDto.description,
           ownerId: owner.id,
+          companyId: 'need to complete this field',
           projectMembers: {
             create: {
               userId: owner.id,

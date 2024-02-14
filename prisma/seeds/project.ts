@@ -3,15 +3,18 @@ import { faker } from '@faker-js/faker';
 
 const prisma = new PrismaClient();
 
-export const createProjects = async () => {
+export const createProjects = async (nbProject: number) => {
   console.log('Creating 10 project');
 
   const users = await prisma.user.findMany();
 
-  const projects = Array.from({ length: 10 }, () => ({
+  const companies = await prisma.company.findMany();
+
+  const projects = Array.from({ length: nbProject }, () => ({
     name: faker.company.name(),
     description: faker.company.catchPhrase(),
     ownerId: users[Math.floor(Math.random() * users.length)].id,
+    companyId: companies[Math.floor(Math.random() * companies.length)].id,
   }));
 
   try {

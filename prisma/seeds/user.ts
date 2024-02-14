@@ -4,9 +4,9 @@ import * as argon from 'argon2';
 
 const prisma = new PrismaClient();
 
-export const createUsers = async () => {
+export const createUsers = async (nbUser: number) => {
   const password = await argon.hash('password');
-  const users = Array.from({ length: 10 }, () => ({
+  const users = Array.from({ length: nbUser }, () => ({
     email: faker.internet.email(),
     hashedPassword: password,
     firstName: faker.person.firstName(),

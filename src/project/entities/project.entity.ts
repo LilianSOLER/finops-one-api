@@ -37,4 +37,7 @@ export class ProjectEntity implements Project {
     description: 'Members of the project',
   })
   members: ProjectMembersEntity[];
+
+  @ApiProperty({ type: 'string', format: 'uuid' })
+  companyId: string;
 }

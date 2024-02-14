@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const createProjectMembers = async () => {
+export const createProjectMembers = async (nbMemberMaxPerProject: number) => {
   console.log('Adding members to projects');
 
   const users = await prisma.user.findMany();
@@ -11,7 +11,7 @@ export const createProjectMembers = async () => {
 
   const projectMembers = allProjects.map((project) => {
     const randomUsers = Array.from(
-      { length: Math.floor(Math.random() * 5) },
+      { length: Math.floor(Math.random() * nbMemberMaxPerProject) },
       () => users[Math.floor(Math.random() * users.length)],
     );
 

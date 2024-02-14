@@ -1,7 +1,11 @@
 import {
+  clearCompanies,
+  clearCompanyMembers,
   clearProjectMembers,
   clearProjects,
   clearUsers,
+  createCompanies,
+  createCompanyMembers,
   createProjectMembers,
   createProjects,
   createUsers,
@@ -12,11 +16,15 @@ const prisma = new PrismaClient();
 
 async function main() {
   await clearProjectMembers();
+  await clearCompanyMembers();
   await clearProjects();
+  await clearCompanies();
   await clearUsers();
-  await createUsers();
-  await createProjects();
-  await createProjectMembers();
+  await createUsers(1000);
+  await createCompanies(10);
+  await createCompanyMembers(200);
+  await createProjects(50);
+  await createProjectMembers(50);
 }
 
 main()
