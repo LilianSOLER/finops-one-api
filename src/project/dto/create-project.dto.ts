@@ -15,4 +15,12 @@ export class CreateProjectDto {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @ApiProperty({
+    example: 'Company ID',
+    description: 'Company ID',
+  })
+  @IsString()
+  @IsNotEmpty()
+  companyId: string;
 }

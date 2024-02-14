@@ -112,6 +112,11 @@ export class UserService {
             project: true,
           },
         },
+        companyMember: {
+          include: {
+            company: true,
+          },
+        },
       },
     });
   }

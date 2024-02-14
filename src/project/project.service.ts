@@ -18,7 +18,7 @@ export class ProjectService {
           name: createProjectDto.name,
           description: createProjectDto.description,
           ownerId: owner.id,
-          companyId: 'need to complete this field',
+          companyId: createProjectDto.companyId,
           projectMembers: {
             create: {
               userId: owner.id,
@@ -29,6 +29,7 @@ export class ProjectService {
         include: {
           owner: true,
           projectMembers: true,
+          company: true,
         },
       });
       return user;
@@ -46,6 +47,7 @@ export class ProjectService {
             user: true,
           },
         },
+        company: true,
       },
     });
 
@@ -66,6 +68,7 @@ export class ProjectService {
             user: true,
           },
         },
+        company: true,
       },
     });
 
@@ -106,6 +109,7 @@ export class ProjectService {
             user: true,
           },
         },
+        company: true,
       },
     });
   }
@@ -127,6 +131,7 @@ export class ProjectService {
             user: true,
           },
         },
+        company: true,
       },
     });
   }
