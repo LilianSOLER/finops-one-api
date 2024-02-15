@@ -169,4 +169,51 @@ export class CompanyService {
       },
     });
   }
+
+  async getProjects(id: string) {
+    const company = await this.prisma.company.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        project: {
+          include: {
+            owner: true,
+            projectMembers: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    return company.project;
+  }
+
+  async getMembers(id: string) {
+    const company = await this.prisma.company.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        companyMembers: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    return company.companyMembers;
+  }
 }

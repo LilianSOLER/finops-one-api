@@ -14,7 +14,7 @@ const config = new DocumentBuilder()
   .addTag('auth')
   .addTag('users')
   .addTag('projects')
-  .addTag('company')
+  .addTag('companies')
 
   .addBearerAuth()
 

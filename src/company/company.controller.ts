@@ -11,7 +11,8 @@ import {
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto, UpdateCompanyDto } from './dto';
-import { CompanyEntity } from './entities';
+import { CompanyEntity, CompanyMembersEntity } from './entities';
+import { ProjectEntity } from '../project/entities';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -29,7 +30,7 @@ import {
   description: 'Internal server error',
 })
 @ApiBearerAuth()
-@Controller('company')
+@Controller('companies')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
@@ -105,5 +106,37 @@ export class CompanyController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.companyService.remove(id);
+  }
+
+  @ApiOperation({ summary: 'Get company projects' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Company projects',
+    type: [ProjectEntity],
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Company not found',
+  })
+  @HttpCode(HttpStatus.OK)
+  @Get(':id/projects')
+  getProjects(@Param('id') id: string) {
+    return this.companyService.getProjects(id);
+  }
+
+  @ApiOperation({ summary: 'Get company members' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Company members',
+    type: [CompanyMembersEntity],
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Company not found',
+  })
+  @HttpCode(HttpStatus.OK)
+  @Get(':id/members')
+  getMembers(@Param('id') id: string) {
+    return this.companyService.getMembers(id);
   }
 }
