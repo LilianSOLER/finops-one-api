@@ -39,6 +39,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/schedule": "^4.0.1",
     "@prisma/client": "^5.9.1",
     "argon2": "^0.31.2",
     "aws-sdk": "^2.1553.0",

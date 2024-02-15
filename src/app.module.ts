@@ -6,10 +6,11 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule} from '@nestjs/config';
 import { AwsModule } from './aws/aws.module';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     ConfigModule.forRoot({isGlobal:true}),
-    //UserModule,
+    ScheduleModule.forRoot(),
     AuthModule,
     PrismaModule,
 	AwsModule],
