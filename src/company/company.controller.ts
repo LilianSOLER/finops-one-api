@@ -19,7 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-@ApiTags('company')
+@ApiTags('companies')
 @ApiResponse({
   status: HttpStatus.BAD_REQUEST,
   description: 'Bad request',
@@ -79,15 +79,14 @@ export class CompanyController {
 
   @ApiOperation({ summary: 'Update company by id' })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: HttpStatus.NO_CONTENT,
     description: 'Company updated',
-    type: CompanyEntity,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: 'Company not found',
   })
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
     return this.companyService.update(id, updateCompanyDto);
@@ -95,14 +94,14 @@ export class CompanyController {
 
   @ApiOperation({ summary: 'Delete company by id' })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: HttpStatus.NO_CONTENT,
     description: 'Company deleted',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: 'Company not found',
   })
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.companyService.remove(id);

@@ -40,19 +40,16 @@ export class CompanyEntity implements Company {
   ownerId: string;
 
   @ApiProperty({
-    example: 'Company owner',
     description: 'Company owner',
   })
   owner: UserEntity;
   @ApiProperty({
-    example: 'Company members',
     description: 'Company members',
     type: [CompanyMembersEntity],
   })
   companyMembers: CompanyMembersEntity[];
 
   @ApiProperty({
-    example: 'Company projects',
     description: 'Company projects',
     type: [ProjectEntity],
   })
