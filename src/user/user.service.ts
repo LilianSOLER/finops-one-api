@@ -84,6 +84,8 @@ export class UserService {
     // @ts-expect-error password must be replaced with hashedPassword
     delete updateUserDto.password;
 
+    console.log(updateUserDto);
+
     return this.prismaService.user.update({
       where: { id },
       data: updateUserDto,
