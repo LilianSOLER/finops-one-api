@@ -23,9 +23,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtGuard, ProjectRolesGuard } from '../auth/guard';
+import { JwtGuard, ProjectRolesGuard, RolesGuard } from '../auth/guard';
 import { ProjectRole, User } from '@prisma/client';
-import { GetUser, ProjectRoles } from '../auth/decorator/';
+import { GetUser, ProjectRoles, Roles } from '../auth/decorator/';
 import { ProjectEntity } from './entities';
 
 @ApiTags('projects')
@@ -38,7 +38,7 @@ import { ProjectEntity } from './entities';
   description: 'Internal server error',
 })
 @ApiBearerAuth()
-@UseGuards(JwtGuard, ProjectRolesGuard)
+@UseGuards(JwtGuard, RolesGuard, ProjectRolesGuard)
 @Controller('projects')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
@@ -49,6 +49,7 @@ export class ProjectController {
     description: 'Project created',
     type: ProjectEntity,
   })
+  @Roles(ProjectRole.ADMIN)
   @HttpCode(HttpStatus.CREATED)
   @Post()
   create(@Body() createProjectDto: CreateProjectDto, @GetUser() user: User) {
@@ -65,6 +66,7 @@ export class ProjectController {
     status: HttpStatus.NOT_FOUND,
     description: 'Projects not found',
   })
+  @Roles(ProjectRole.ADMIN)
   @HttpCode(HttpStatus.OK)
   @Get()
   findAll() {
@@ -77,6 +79,7 @@ export class ProjectController {
     description: 'Project',
     type: ProjectEntity,
   })
+  @Roles(ProjectRole.ADMIN)
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: 'Projects not found',
