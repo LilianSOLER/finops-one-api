@@ -10,7 +10,12 @@ import {
   Post,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
-import { AddMemberDto, CreateCompanyDto, UpdateCompanyDto } from './dto';
+import {
+  AddMemberDto,
+  CreateCompanyDto,
+  UpdateCompanyDto,
+  UpdateMemberDto,
+} from './dto';
 import { CompanyEntity, CompanyMembersEntity } from './entities';
 import { ProjectEntity } from '../project/entities';
 import {
@@ -154,5 +159,24 @@ export class CompanyController {
   @Post(':id/members')
   addMember(@Param('id') id: string, @Body() addMemberDto: AddMemberDto) {
     return this.companyService.addMember(id, addMemberDto);
+  }
+
+  @ApiOperation({ summary: 'Update company member' })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Company member updated',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Company not found',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch(':id/members/:userId/role')
+  updateMember(
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+    @Body() updateMemberDto: UpdateMemberDto,
+  ) {
+    return this.companyService.updateMember(id, userId, updateMemberDto);
   }
 }

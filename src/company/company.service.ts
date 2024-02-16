@@ -3,7 +3,12 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { AddMemberDto, CreateCompanyDto, UpdateCompanyDto } from './dto/';
+import {
+  AddMemberDto,
+  CreateCompanyDto,
+  UpdateCompanyDto,
+  UpdateMemberDto,
+} from './dto/';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -264,5 +269,59 @@ export class CompanyService {
     });
 
     return companyMember;
+  }
+
+  async updateMember(
+    id: string,
+    userId: string,
+    updateMemberDto: UpdateMemberDto,
+  ) {
+    const company = await this.prisma.company.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    let owner = null;
+    if (updateMemberDto.role === 'OWNER') {
+      owner = await this.prisma.companyMember.findFirst({
+        where: {
+          companyId: company.id,
+          role: 'OWNER',
+        },
+      });
+    }
+
+    if (owner) {
+      throw new InternalServerErrorException('Company already has an owner');
+    }
+
+    const companyMember = await this.prisma.companyMember.updateMany({
+      where: {
+        companyId: company.id,
+        userId,
+      },
+      data: {
+        role: updateMemberDto.role,
+      },
+    });
+
+    if (!companyMember) {
+      throw new NotFoundException('Company member not found');
+    }
   }
 }
