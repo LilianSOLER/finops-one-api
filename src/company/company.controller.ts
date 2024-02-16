@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
@@ -24,6 +25,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { CompanyRolesGuard, JwtGuard, RolesGuard } from '../auth/guard';
+import { CompanyRole, UserRole } from '@prisma/client';
+import { CompanyRoles, Roles } from '../auth/decorator';
 
 @ApiTags('companies')
 @ApiResponse({
@@ -35,6 +39,7 @@ import {
   description: 'Internal server error',
 })
 @ApiBearerAuth()
+@UseGuards(JwtGuard, RolesGuard, CompanyRolesGuard)
 @Controller('companies')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
@@ -45,6 +50,7 @@ export class CompanyController {
     description: 'Company created',
     type: CompanyEntity,
   })
+  @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.CREATED)
   @Post()
   create(@Body() createCompanyDto: CreateCompanyDto) {
@@ -62,6 +68,7 @@ export class CompanyController {
     description: 'Companies not found',
   })
   @HttpCode(HttpStatus.OK)
+  @Roles(UserRole.ADMIN)
   @Get()
   findAll() {
     return this.companyService.findAll();
@@ -77,6 +84,7 @@ export class CompanyController {
     status: HttpStatus.NOT_FOUND,
     description: 'Company not found',
   })
+  @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -92,6 +100,7 @@ export class CompanyController {
     status: HttpStatus.NOT_FOUND,
     description: 'Company not found',
   })
+  @CompanyRoles(CompanyRole.ADMIN, CompanyRole.OWNER)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
@@ -107,6 +116,7 @@ export class CompanyController {
     status: HttpStatus.NOT_FOUND,
     description: 'Company not found',
   })
+  @CompanyRoles(CompanyRole.ADMIN, CompanyRole.OWNER)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   remove(@Param('id') id: string) {
@@ -123,6 +133,7 @@ export class CompanyController {
     status: HttpStatus.NOT_FOUND,
     description: 'Company not found',
   })
+  @CompanyRoles(CompanyRole.ADMIN, CompanyRole.OWNER)
   @HttpCode(HttpStatus.OK)
   @Get(':id/projects')
   getProjects(@Param('id') id: string) {
@@ -139,6 +150,7 @@ export class CompanyController {
     status: HttpStatus.NOT_FOUND,
     description: 'Company not found',
   })
+  @CompanyRoles(CompanyRole.ADMIN, CompanyRole.OWNER)
   @HttpCode(HttpStatus.OK)
   @Get(':id/members')
   getMembers(@Param('id') id: string) {
@@ -155,6 +167,7 @@ export class CompanyController {
     status: HttpStatus.NOT_FOUND,
     description: 'Company not found',
   })
+  @CompanyRoles(CompanyRole.ADMIN, CompanyRole.OWNER)
   @HttpCode(HttpStatus.CREATED)
   @Post(':id/members')
   addMember(@Param('id') id: string, @Body() addMemberDto: AddMemberDto) {
@@ -170,6 +183,7 @@ export class CompanyController {
     status: HttpStatus.NOT_FOUND,
     description: 'Company not found',
   })
+  @CompanyRoles(CompanyRole.ADMIN, CompanyRole.OWNER)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':id/members/:userId/role')
   updateMember(
