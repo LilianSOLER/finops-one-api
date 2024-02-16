@@ -130,6 +130,7 @@ export class ProjectController {
     status: HttpStatus.NOT_FOUND,
     description: 'Users not found',
   })
+  @ProjectRoles(ProjectRole.ADMIN, ProjectRole.OWNER)
   @HttpCode(HttpStatus.OK)
   @Get(':id/members')
   getMembers(@Param('id') id: string) {
@@ -145,6 +146,7 @@ export class ProjectController {
     status: HttpStatus.NOT_FOUND,
     description: 'Project not found',
   })
+  @ProjectRoles(ProjectRole.ADMIN, ProjectRole.OWNER)
   @HttpCode(HttpStatus.OK)
   @Post(':id/members')
   addMember(@Param('id') id: string, @Body() addMemberDto: AddMemberDto) {
@@ -160,6 +162,7 @@ export class ProjectController {
     status: HttpStatus.NOT_FOUND,
     description: 'Project not found',
   })
+  @ProjectRoles(ProjectRole.ADMIN, ProjectRole.OWNER)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':id/members/:userId/role')
   updateMember(
