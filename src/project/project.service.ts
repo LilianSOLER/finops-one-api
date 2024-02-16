@@ -3,7 +3,12 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { AddMemberDto, CreateProjectDto, UpdateProjectDto } from './dto';
+import {
+  AddMemberDto,
+  CreateProjectDto,
+  UpdateMemberDto,
+  UpdateProjectDto,
+} from './dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
 
@@ -210,5 +215,59 @@ export class ProjectService {
     });
 
     return projectMember;
+  }
+
+  async updateMember(
+    id: string,
+    userId: string,
+    updateMemberDto: UpdateMemberDto,
+  ) {
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    let owner = null;
+    if (updateMemberDto.role === 'OWNER') {
+      owner = await this.prisma.projectMember.findFirst({
+        where: {
+          projectId: project.id,
+          role: 'OWNER',
+        },
+      });
+    }
+
+    if (owner) {
+      throw new InternalServerErrorException('Project already has an owner');
+    }
+
+    const projectMember = await this.prisma.projectMember.updateMany({
+      where: {
+        projectId: project.id,
+        userId,
+      },
+      data: {
+        role: updateMemberDto.role,
+      },
+    });
+
+    if (!projectMember) {
+      throw new NotFoundException('Project member not found');
+    }
   }
 }
