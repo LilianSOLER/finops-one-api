@@ -115,4 +115,19 @@ export class ProjectController {
   remove(@Param('id') id: string) {
     return this.projectService.remove(id);
   }
+
+  @ApiOperation({ summary: 'Get all user from project' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Users list',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Users not found',
+  })
+  @HttpCode(HttpStatus.OK)
+  @Get(':id/members')
+  getMembers(@Param('id') id: string) {
+    return this.projectService.getMembers(id);
+  }
 }

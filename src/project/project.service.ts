@@ -135,4 +135,31 @@ export class ProjectService {
       },
     });
   }
+
+  async getMembers(id: string) {
+    const project = this.prisma.project.findUnique({
+      where: { id },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    const tmp = await this.prisma.project.findUnique({
+      where: { id: id },
+      include: {
+        projectMembers: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    if (!tmp) {
+      throw new NotFoundException('Project not found');
+    }
+
+    return tmp.projectMembers;
+  }
 }
