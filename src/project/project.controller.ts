@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { CreateProjectDto, UpdateProjectDto } from './dto';
+import { AddMemberDto, CreateProjectDto, UpdateProjectDto } from './dto';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -129,5 +129,20 @@ export class ProjectController {
   @Get(':id/members')
   getMembers(@Param('id') id: string) {
     return this.projectService.getMembers(id);
+  }
+
+  @ApiOperation({ summary: 'Add member to project' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Member added',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Project not found',
+  })
+  @HttpCode(HttpStatus.OK)
+  @Post(':id/members')
+  addMember(@Param('id') id: string, @Body() addMemberDto: AddMemberDto) {
+    return this.projectService.addMember(id, addMemberDto);
   }
 }
