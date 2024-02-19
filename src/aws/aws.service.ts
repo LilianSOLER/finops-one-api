@@ -4,9 +4,9 @@ import * as AWS from 'aws-sdk';
 import { CredentialDto } from "./dto/credential.dto";
 import {PrismaService} from '../prisma/prisma.service';
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import type { Metric } from "./types";
-import { Cron } from "@nestjs/schedule";
+import type { Metric, MetricGroupeBy } from "./types";
 import { RemoveCredentialDto } from "./dto/rm-credential.dto";
+
 
 
 const credentials = {
@@ -50,16 +50,16 @@ export class AwsService{
 
         console.log("Retrieve datas from : ",Hier.toISOString().split("T")[0] ," to ", ajd.toISOString().split("T")[0]);
 
-        // const params = {
-        //     TimePeriod: {
-        //         Start: Hier.toISOString().split("T")[0],
-        //         End: ajd.toISOString().split('T')[0]
-        //     },
         const params = {
             TimePeriod: {
-                Start: "2024-02-01",
+                Start: Hier.toISOString().split("T")[0],
                 End: ajd.toISOString().split('T')[0]
             },
+        // const params = {
+        //     TimePeriod: {
+        //         Start: "2024-02-01",
+        //         End: ajd.toISOString().split('T')[0]
+        //     },
 
             Granularity: 'DAILY',
             GroupBy : [{"Type" : "DIMENSION", "Key" :"SERVICE"}],
@@ -149,7 +149,7 @@ export class AwsService{
             
             const metric = await this.prismaService.aws_metrics.create({
                 data:{
-                    timePeriod: metrics[i].timePeriod,
+                    timePeriod: metrics[i].timePeriod.toISOString(),
                     service: metrics[i].service,
                     amortizedCost: metrics[i].amortizedCost,
                     blendedCost: metrics[i].blendedCost,
@@ -208,8 +208,42 @@ export class AwsService{
     // ajouter le CRUD
 
     async getMetrics(){
-        const res = await this.prismaService.aws_metrics.findMany();
+        const res = await this.prismaService.aws_metrics.findMany({
+            select:{
+                service:true,
+                amortizedCost:true,
+                timePeriod:true,
+                blendedCost:true,
+                netUnblendedCost:true,
+                netAmortizedCost:true,
+                //usageQuantity:true,
+                normalizedUsageAmount:true,
+            }
+        });
         return res;
+    }
+
+    async getCostServices(){
+        const res = await this.prismaService.aws_metrics.groupBy({
+            by : ['service'],
+            _sum : {
+                blendedCost : true,
+            }
+            
+        });
+        
+        let tmp : MetricGroupeBy[] = [];
+        res.forEach((item)=>{
+            let coutGroup : MetricGroupeBy = {cost : 0, service : undefined};
+            let cout = item._sum.blendedCost;
+            let service = item.service;
+            if(cout && service){
+                coutGroup.cost = cout;
+                coutGroup.service = service;
+                tmp.push(coutGroup);
+            }
+        });
+        return tmp;
     }
 
     //je ne mets pas d'update car ça ne me parait pas inutile de modifier des métrics 

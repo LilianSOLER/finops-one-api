@@ -9,3 +9,8 @@ export interface Metric {
     usageQuantity: number;
     normalizedUsageAmount: number;
   }
+
+export interface MetricGroupeBy{
+  cost? : number;
+  service? : string;
+}

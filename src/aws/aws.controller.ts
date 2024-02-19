@@ -18,8 +18,14 @@ export class AwsController{
     // l"utilisateur récupère seulement les données de la base de données
     @Get()
     async getMetrics(){
+        console.log("Query AWS metrics");
         const res = await this.awsService.getMetrics();
         return res;
+    }
+
+    @Get('serviceCost')
+    async getServiceCost(){
+        return await this.awsService.getCostServices();
     }
 
     //ajouter une fonction getCost pour un projet en particulier
