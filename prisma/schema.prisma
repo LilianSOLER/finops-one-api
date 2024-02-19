@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CostAndUsage {
+  id     String               @id
+  name   String
+  type   String
+  etag   String?
+  values CostAndUsageValues[]
+}
+
+model CostAndUsageValues {
+  cost           Float
+  usageDate      DateTime     @id
+  currency       String
+  CostAndUsage   CostAndUsage @relation(fields: [costAndUsageId], references: [id])
+  costAndUsageId String
+}
+
+model Budget {
+  id           String   @id
+  name         String
+  type         String
+  eTag         String?
+  startDate    DateTime
+  endDate      DateTime
+  timeGrain    String
+  amount       Float
+  currentSpend Float
+  unit         String
+  category     String
+}
+
+model Alert {
+  id                     String   @id
+  name                   String
+  type                   String
+  alertType              String
+  alertCategory          String
+  alertCriteria          String
+  description            String
+  source                 String
+  timeGrainType          String
+  periodStartDate        DateTime
+  triggeredBy            String
+  threshold              Float
+  operator               String
+  amount                 Float
+  unit                   String
+  currentSpend           Float
+  costEntityId           String
+  status                 String
+  creationTime           DateTime
+  closeTime              DateTime
+  modificationTime       DateTime
+  statusModificationTime DateTime
+}
