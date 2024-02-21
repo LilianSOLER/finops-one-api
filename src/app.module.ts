@@ -8,8 +8,13 @@ import { UserModule } from './user/user.module';
 import { ProjectModule } from './project/project.module';
 import { CompanyModule } from './company/company.module';
 
+/**
+ * Main module of the NestJS application.
+ * Imports all other modules and defines controllers and providers.
+ */
 @Module({
   imports: [
+    // Import ConfigModule to load environment variables
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     PrismaModule,
