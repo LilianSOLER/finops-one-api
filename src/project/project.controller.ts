@@ -43,6 +43,13 @@ import { ProjectEntity } from './entities';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
+  /**
+   * Create a new project.
+   * @param createProjectDto - The data for creating a new project.
+   * @param user - The authenticated user.
+   * @returns The newly created project.
+   * @roles Only users with the company role of 'ADMIN' or 'OWNER' can create a project.
+   */
   @ApiOperation({ summary: 'Create project' })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -56,6 +63,11 @@ export class ProjectController {
     return this.projectService.create(createProjectDto, user);
   }
 
+  /**
+   * Get all projects.
+   * @returns A list of all projects.
+   * @roles Only users with the company role of 'ADMIN' or 'OWNER' can get all projects.
+   */
   @ApiOperation({ summary: 'Get all projects' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -73,6 +85,12 @@ export class ProjectController {
     return this.projectService.findAll();
   }
 
+  /**
+   * Get a project by ID.
+   * @param id - The ID of the project.
+   * @returns The project with the specified ID.
+   * @roles Only users with the company role of 'ADMIN' or 'OWNER' can get a project by ID.
+   */
   @ApiOperation({ summary: 'Get project by id' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -90,6 +108,13 @@ export class ProjectController {
     return this.projectService.findOne(id);
   }
 
+  /**
+   * Update a project.
+   * @param id
+   * @param updateProjectDto
+   * @returns The updated project.
+   * @roles Only users with the company role of 'ADMIN' or 'OWNER' can update a project.
+   */
   @ApiOperation({ summary: 'Update project' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -107,6 +132,12 @@ export class ProjectController {
     return this.projectService.update(id, updateProjectDto);
   }
 
+  /**
+   * Delete a project by ID.
+   * @param id - The ID of the project.
+   * @returns The deleted project.
+   * @roles Only users with the company role of 'ADMIN' or 'OWNER' can delete a project.
+   */
   @ApiOperation({ summary: 'Delete project' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -124,6 +155,12 @@ export class ProjectController {
     return this.projectService.remove(id);
   }
 
+  /**
+   * Get all user from project.
+   * @param id
+   * @returns List of users.
+   * @roles Only users with the project role of 'ADMIN' or 'OWNER' can get all users from a project.
+   */
   @ApiOperation({ summary: 'Get all user from project' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -140,6 +177,13 @@ export class ProjectController {
     return this.projectService.getMembers(id);
   }
 
+  /**
+   * Add member to project.
+   * @param id
+   * @param addMemberDto
+   * @returns Member added.
+   * @roles Only users with the project role of 'ADMIN' or 'OWNER' can add a member to a project.
+   */
   @ApiOperation({ summary: 'Add member to project' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -156,6 +200,14 @@ export class ProjectController {
     return this.projectService.addMember(id, addMemberDto);
   }
 
+  /**
+   * Update project member.
+   * @param id
+   * @param userId
+   * @param updateMemberDto
+   * @returns Project member updated.
+   * @roles Only users with the project role of 'ADMIN' or 'OWNER' can update a project member.
+   */
   @ApiOperation({ summary: 'Update project member' })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,

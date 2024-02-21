@@ -1,6 +1,11 @@
 import { User, UserRole } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
+/**
+ * Data Transfer Object (DTO) representing a user entity.
+ * Used for Swagger documentation purposes.
+ */
+
 export class UserEntity implements User {
   @ApiProperty({ type: 'string', format: 'uuid' })
   id: string;

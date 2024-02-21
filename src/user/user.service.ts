@@ -12,13 +12,21 @@ export class UserService {
     private authService: AuthService,
   ) {}
 
+  /**
+   * Create a new user.
+   * @param createUserDto - The data for creating a new user.
+   * @returns The newly created user.
+   */
   async create(createUserDto: CreateUserDto) {
+    // Create a new user using the auth service
     let res = null;
     try {
       res = await this.authService.signup(createUserDto);
     } catch (e) {
       throw e;
     }
+
+    // If the user's first name or last name is provided, update the user with the provided data
     if (createUserDto.firstName || createUserDto.lastName) {
       try {
         res = await this.prismaService.user.update({
@@ -36,9 +44,14 @@ export class UserService {
         throw e;
       }
     }
+    // Return the newly created user or the updated user
     return res;
   }
 
+  /**
+   * Find all users.
+   * @returns A list of all users.
+   */
   async findAll() {
     const user = await this.prismaService.user.findMany();
 
@@ -49,6 +62,11 @@ export class UserService {
     return user;
   }
 
+  /**
+   * Find a user by ID.
+   * @param id - The ID of the user to find.
+   * @returns The found user.
+   */
   async findOne(id: string) {
     const user = await this.prismaService.user.findUnique({
       where: { id },
@@ -61,7 +79,14 @@ export class UserService {
     return user;
   }
 
+  /**
+   * Update a user by ID.
+   * @param id - The ID of the user to update.
+   * @param updateUserDto - The data to update the user.
+   * @returns The updated user.
+   */
   async update(id: string, updateUserDto: UpdateUserDto) {
+    // Find the user by ID
     const user = await this.prismaService.user.findUnique({
       where: { id },
     });
@@ -70,8 +95,10 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
+    // If the user's password is provided, hash the password and update the user with the provided data
     if (updateUserDto.password) {
       const hash = await argon.hash(updateUserDto.password);
+      // Delete the password from the update user data
       // @ts-expect-error password must be replaced with hashedPassword
       delete updateUserDto.password;
 
@@ -92,6 +119,11 @@ export class UserService {
     });
   }
 
+  /**
+   * Remove a user by ID.
+   * @param id - The ID of the user to remove.
+   * @returns The removed user.
+   */
   async remove(id: string) {
     const user = await this.prismaService.user.findUnique({
       where: { id },
@@ -105,7 +137,13 @@ export class UserService {
     });
   }
 
+  /**
+   * Get the details of the currently authenticated user.
+   * @param user - The authenticated user.
+   * @returns The details of the authenticated user.
+   */
   getMe(user: User) {
+    // Find the user by ID and include the user's project and company members
     return this.prismaService.user.findUnique({
       where: { id: user.id },
       include: {

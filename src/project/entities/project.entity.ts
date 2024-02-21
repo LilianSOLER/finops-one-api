@@ -3,6 +3,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UserEntity } from '../../user/entities';
 import { ProjectMembersEntity } from './project-members.entity';
 
+/**
+ * Data Transfer Object (DTO) representing a project entity.
+ * Used for Swagger documentation purposes.
+ */
+
 export class ProjectEntity implements Project {
   @ApiProperty({ type: 'string', format: 'uuid' })
   id: string;

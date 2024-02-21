@@ -16,6 +16,12 @@ import { User } from '@prisma/client';
 export class ProjectService {
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * Create a new project.
+   * @param createProjectDto - The data for creating a new project.
+   * @param owner - The owner of the project.
+   * @returns The newly created project.
+   */
   async create(createProjectDto: CreateProjectDto, owner: User) {
     try {
       const user = await this.prisma.project.create({
@@ -25,6 +31,7 @@ export class ProjectService {
           ownerId: owner.id,
           companyId: createProjectDto.companyId,
           projectMembers: {
+            // Add the owner as a member of the project.
             create: {
               userId: owner.id,
               role: 'OWNER',
@@ -43,6 +50,11 @@ export class ProjectService {
     }
   }
 
+  /**
+   * Retrieve all projects.
+   * @returns List of all projects.
+   * @throws {NotFoundException} If no projects are found.
+   */
   async findAll() {
     const project = await this.prisma.project.findMany({
       include: {
@@ -63,6 +75,12 @@ export class ProjectService {
     return project;
   }
 
+  /**
+   * Retrieve a project by its ID.
+   * @param id - The ID of the project.
+   * @returns The project with the specified ID.
+   * @throws {NotFoundException} If the project with the given ID does not exist.
+   */
   async findOne(id: string) {
     const project = await this.prisma.project.findUnique({
       where: { id },
@@ -84,6 +102,13 @@ export class ProjectService {
     return project;
   }
 
+  /**
+   * Update a project.
+   * @param id - The ID of the project to update.
+   * @param updateProjectDto - Data for updating the project.
+   * @returns The updated project.
+   * @throws {NotFoundException} If the project to update is not found.
+   */
   async update(id: string, updateProjectDto: UpdateProjectDto) {
     const project = await this.prisma.project.findUnique({
       where: { id },
@@ -119,6 +144,12 @@ export class ProjectService {
     });
   }
 
+  /**
+   * Delete a project.
+   * @param id - The ID of the project to delete.
+   * @returns The deleted project.
+   * @throws {NotFoundException} If the project to delete is not found.
+   */
   async remove(id: string) {
     const project = await this.prisma.project.findUnique({
       where: { id },
@@ -141,6 +172,12 @@ export class ProjectService {
     });
   }
 
+  /**
+   * Get all members of a project.
+   * @param id - The ID of the project.
+   * @returns List of all project members.
+   * @throws {NotFoundException} If the project is not found.
+   */
   async getMembers(id: string) {
     const project = this.prisma.project.findUnique({
       where: { id },
@@ -168,6 +205,14 @@ export class ProjectService {
     return tmp.projectMembers;
   }
 
+  /**
+   * Add a member to a project.
+   * @param id - The ID of the project.
+   * @param addMemberDto - Data for adding a member to the project.
+   * @returns The added project member.
+   * @throws {NotFoundException} If the project or user is not found.
+   * @throws {InternalServerErrorException} If the user is already a member.
+   */
   async addMember(id: string, addMemberDto: AddMemberDto) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -217,6 +262,14 @@ export class ProjectService {
     return projectMember;
   }
 
+  /**
+   * Update the role of a project member.
+   * @param id - The ID of the project.
+   * @param userId - The ID of the user whose role is being updated.
+   * @param updateMemberDto - Data for updating the member's role.
+   * @throws {NotFoundException} If the project or user is not found.
+   * @throws {InternalServerErrorException} If the project already has an owner or if the member is not found.
+   */
   async updateMember(
     id: string,
     userId: string,
@@ -242,6 +295,7 @@ export class ProjectService {
       throw new NotFoundException('User not found');
     }
 
+    // Check if the project already has an owner.
     let owner = null;
     if (updateMemberDto.role === 'OWNER') {
       owner = await this.prisma.projectMember.findFirst({

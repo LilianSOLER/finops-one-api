@@ -45,6 +45,11 @@ import { Roles } from '../auth/decorator/roles.decorator';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  /**
+   * Get information about the current user.
+   * @param user - The authenticated user.
+   * @returns The information of the current user.
+   */
   @ApiOperation({ summary: 'Get user info' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -58,6 +63,11 @@ export class UserController {
     return this.userService.getMe(user);
   }
 
+  /**
+   * Create a new user.
+   * @param createUserDto - The data for creating a new user.
+   * @returns The newly created user.
+   */
   @ApiOperation({ summary: 'Create user' })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -70,6 +80,10 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  /**
+   * Get all users.
+   * @returns A list of all users.
+   */
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -82,6 +96,11 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  /**
+   * Find a user by ID.
+   * @param id - The ID of the user to find.
+   * @returns The found user.
+   */
   @ApiOperation({ summary: 'Get user by id' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -95,6 +114,12 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
+  /**
+   * Update a user by ID.
+   * @param id - The ID of the user to update.
+   * @param updateUserDto - The data to update the user.
+   * @returns The updated user.
+   */
   @ApiOperation({ summary: 'Update user by id' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -108,6 +133,11 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
+  /**
+   * Delete a user by ID.
+   * @param id - The ID of the user to delete.
+   * @returns The deleted user.
+   */
   @ApiOperation({ summary: 'Delete user by id' })
   @ApiResponse({
     status: HttpStatus.OK,
