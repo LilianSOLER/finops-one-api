@@ -2,6 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CompanyMember, CompanyRole } from '@prisma/client';
 import { UserEntity } from '../../user/entities';
 
+/**
+ * Data Transfer Object (DTO) representing a company member entity.
+ * Used for Swagger documentation purposes.
+ */
 export class CompanyMembersEntity implements CompanyMember {
   @ApiProperty({ type: 'string', format: 'uuid' })
   id: string;

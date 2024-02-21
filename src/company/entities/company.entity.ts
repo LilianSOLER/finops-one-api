@@ -4,6 +4,10 @@ import { UserEntity } from '../../user/entities';
 import { CompanyMembersEntity } from './company-members.entity';
 import { ProjectEntity } from '../../project/entities';
 
+/**
+ * Data Transfer Object (DTO) representing a company entity.
+ * Used for Swagger documentation purposes.
+ */
 export class CompanyEntity implements Company {
   @ApiProperty({
     example: 'Company ID',
