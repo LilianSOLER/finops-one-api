@@ -20,6 +20,11 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * Endpoint for user registration.
+   * @param dto User's registration details.
+   * @returns Returns user registration response.
+   */
   @ApiOperation({ summary: 'User registration' })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -32,10 +37,15 @@ export class AuthController {
   })
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')
-  signup(@Body() dto: AuthDto) {
+  signup(@Body() dto: AuthDto): Promise<SignupResponseDto> {
     return this.authService.signup(dto);
   }
 
+  /**
+   * Endpoint for user login.
+   * @param dto User's login credentials.
+   * @returns Returns user login response.
+   */
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -44,7 +54,7 @@ export class AuthController {
   })
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  signin(@Body() dto: AuthDto) {
+  signin(@Body() dto: AuthDto): Promise<{ access_token: string }> {
     return this.authService.signin(dto);
   }
 }

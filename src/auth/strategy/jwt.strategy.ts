@@ -16,7 +16,16 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: { sub: string; email: string }) {
+  /**
+   * Validates the JWT payload.
+   * @param payload JWT payload containing user ID and email.
+   * @returns Returns user details if validation is successful. Otherwise, returns null.
+   */
+  async validate(payload: {
+    sub: string;
+    email: string;
+  }): Promise<{ id: string; email: string } | null> {
+    // Find the user in the database based on the provided user ID
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
       select: { id: true, email: true },
