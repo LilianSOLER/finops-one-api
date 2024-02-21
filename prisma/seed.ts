@@ -29,6 +29,7 @@ async function main() {
 
 main()
   .then(async () => {
+    // Disconnect Prisma client after successful execution
     await prisma.$disconnect();
   })
   .catch(async (e) => {
