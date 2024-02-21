@@ -11,7 +11,6 @@ export class AddMemberDto {
   @ApiProperty({
     example: 'User role',
     description: 'User role',
-    //type: CompanyRole,
     required: false,
   })
   @IsString()

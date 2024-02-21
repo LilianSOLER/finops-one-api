@@ -1,8 +1,7 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateCompanyDto } from './create-company.dto';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
-export class UpdateCompanyDto extends PartialType(CreateCompanyDto) {
+export class UpdateCompanyDto {
   @ApiProperty({
     example: 'Company name',
     description: 'Company name',

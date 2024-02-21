@@ -6,7 +6,6 @@ export class UpdateMemberDto {
   @ApiProperty({
     example: 'User role',
     description: 'User role',
-    //type: CompanyRole,
   })
   @IsString()
   @IsIn(Object.values(CompanyRole))
