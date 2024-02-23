@@ -9,3 +9,20 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model HerokuInvoice {
+  id           String             @id
+  chargesTotal Float // total charges on this invoice
+  creditsTotal Float // total credits on this invoice
+  periodEnd    DateTime // the ending date that the invoice covers
+  periodStart  DateTime // the starting date that this invoice covers
+  state        HerokuInvoiceState // payment status for this invoice (pending, successful, failed)
+  createdAt    DateTime           @default(now()) // when invoice was created
+  updatedAt    DateTime           @updatedAt // when invoice was last updated
+}
+
+enum HerokuInvoiceState {
+  PENDING
+  SUCCESSFUL
+  FAILED
+}

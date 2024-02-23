@@ -1,15 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param, Post } from '@nestjs/common';
 import { HerokuService } from './heroku.service';
-import { CreateHerokuDto } from './dto/create-heroku.dto';
-import { UpdateHerokuDto } from './dto/update-heroku.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Controller('heroku')
 export class HerokuController {
   constructor(private readonly herokuService: HerokuService) {}
 
+  @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_NOON)
   @Post()
-  create(@Body() createHerokuDto: CreateHerokuDto) {
-    return this.herokuService.create(createHerokuDto);
+  create() {
+    return this.herokuService.create();
   }
 
   @Get()
@@ -19,16 +19,6 @@ export class HerokuController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.herokuService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateHerokuDto: UpdateHerokuDto) {
-    return this.herokuService.update(+id, updateHerokuDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.herokuService.remove(+id);
+    return this.herokuService.findOne(id);
   }
 }
