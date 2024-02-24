@@ -33,7 +33,8 @@ export class HerokuEntity implements HerokuInvoice {
   periodStart: Date;
 
   @ApiProperty({
-    type: HerokuInvoiceState,
+    type: 'enum',
+    enum: HerokuInvoiceState,
     description: 'The state of the invoice',
   })
   state: HerokuInvoiceState;
