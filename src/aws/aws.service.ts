@@ -22,8 +22,6 @@ function calculateYesterday(date: Date) {
   return yesterday;
 }
 
-
-
 @Injectable({})
 export class AwsService {
   private ce = new AWS.CostExplorer();
@@ -36,7 +34,6 @@ export class AwsService {
   }
 
   async getCost() {
-
     //retrieve and update aws credentials and set it depending on which project belong the user
     //TODO : add a loop that does this for every existing projects
     //TODO : add the code that update the access for the current project
@@ -44,13 +41,12 @@ export class AwsService {
     const today = new Date();
     const yesterday = calculateYesterday(today);
 
-
     const params = {
       TimePeriod: {
         Start: yesterday.toISOString().split('T')[0],
         End: today.toISOString().split('T')[0],
       },
-   
+
       Granularity: 'DAILY',
       GroupBy: [{ Type: 'DIMENSION', Key: 'SERVICE' }],
       Metrics: [
@@ -209,7 +205,6 @@ export class AwsService {
     }
   }
 
-
   async getMetrics() {
     return await this.prismaService.aws_metrics.findMany({
       select: {
@@ -245,7 +240,6 @@ export class AwsService {
     });
     return tmp;
   }
-
 
   async updateCredentials(credDto: CredentialDto) {
     const cred = await this.prismaService.aws_credentials.findUnique({

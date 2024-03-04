@@ -17,7 +17,6 @@ import { RemoveCredentialDto } from './dto/rm-credential.dto';
 export class AwsController {
   constructor(private awsService: AwsService) {}
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
-  
   async getCost() {
     return await this.awsService.getCost();
   }
@@ -37,7 +36,6 @@ export class AwsController {
   @Post('credentials')
   async addCredentials(@Body() dto: CredentialDto) {
     return await this.awsService.addCredentials(dto);
-  
   }
 
   @Get('credentials')
