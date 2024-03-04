@@ -10,25 +10,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model CostAndUsage {
-  id     String               @id
+model ResourcesCosts {
+  id     String                 @id
   name   String
   type   String
-  etag   String?
-  values CostAndUsageValues[]
+  values ResourcesCostsValues[]
 }
 
-model CostAndUsageValues {
-  cost           Float
-  usageDate      DateTime     @id
-  currency       String
-  CostAndUsage   CostAndUsage @relation(fields: [costAndUsageId], references: [id])
-  costAndUsageId String
+model ResourcesCostsValues {
+  cost             Float
+  usageDate        DateTime
+  resourceGroup    String
+  resourceType     String
+  currency         String
+  ResourcesCosts   ResourcesCosts @relation(fields: [ResourcesCostsId], references: [id])
+  ResourcesCostsId String
+
+  @@unique([usageDate, resourceGroup, resourceType])
 }
 
 model Budget {
-  id           String   @id
-  name         String
+  id           String
+  name         String   @id
   type         String
   eTag         String?
   startDate    DateTime
@@ -41,8 +44,8 @@ model Budget {
 }
 
 model Alert {
-  id                     String   @id
-  name                   String
+  id                     String
+  name                   String   @id
   type                   String
   alertType              String
   alertCategory          String

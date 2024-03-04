@@ -1,21 +1,20 @@
 -- CreateTable
-CREATE TABLE "CostAndUsage" (
+CREATE TABLE "ResourcesCosts" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "type" TEXT NOT NULL,
-    "etag" TEXT,
 
-    CONSTRAINT "CostAndUsage_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "ResourcesCosts_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "CostAndUsageValues" (
+CREATE TABLE "ResourcesCostsValues" (
     "cost" DOUBLE PRECISION NOT NULL,
     "usageDate" TIMESTAMP(3) NOT NULL,
+    "resourceGroup" TEXT NOT NULL,
+    "resourceType" TEXT NOT NULL,
     "currency" TEXT NOT NULL,
-    "costAndUsageId" TEXT NOT NULL,
-
-    CONSTRAINT "CostAndUsageValues_pkey" PRIMARY KEY ("usageDate")
+    "ResourcesCostsId" TEXT NOT NULL
 );
 
 -- CreateTable
@@ -32,7 +31,7 @@ CREATE TABLE "Budget" (
     "unit" TEXT NOT NULL,
     "category" TEXT NOT NULL,
 
-    CONSTRAINT "Budget_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Budget_pkey" PRIMARY KEY ("name")
 );
 
 -- CreateTable
@@ -60,8 +59,11 @@ CREATE TABLE "Alert" (
     "modificationTime" TIMESTAMP(3) NOT NULL,
     "statusModificationTime" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Alert_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Alert_pkey" PRIMARY KEY ("name")
 );
 
+-- CreateIndex
+CREATE UNIQUE INDEX "ResourcesCostsValues_usageDate_resourceGroup_resourceType_key" ON "ResourcesCostsValues"("usageDate", "resourceGroup", "resourceType");
+
 -- AddForeignKey
-ALTER TABLE "CostAndUsageValues" ADD CONSTRAINT "CostAndUsageValues_costAndUsageId_fkey" FOREIGN KEY ("costAndUsageId") REFERENCES "CostAndUsage"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ResourcesCostsValues" ADD CONSTRAINT "ResourcesCostsValues_ResourcesCostsId_fkey" FOREIGN KEY ("ResourcesCostsId") REFERENCES "ResourcesCosts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  dev-db:
+    image: postgres
+    ports:
+      - "5434:5434"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: azureTestDB
