@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Aws_metrics{
+model AwsMetrics{
     id Int @id @default(autoincrement())
     timePeriod DateTime?
     service String?
@@ -21,16 +21,16 @@ model Aws_metrics{
     netAmortizedCost Float?
     normalizedUsageAmount Int?
     usageQuantity Int?
-    //ajouter le projet auquel sont liés ces métriques
+    // TODO: Add link to project table
 }
 
-model Aws_credentials{
+model AwsCredentials{
   id Int @id @default(autoincrement())
-  //createAt DateTime
+  createdAt DateTime
   accessKeyId String @unique
   secretAccessKey String
 
-    //ajouter le compte, le user ou le projet auquel sont associés ces credentials
+    // TODO : Add account, user ou project for the associated credentials
 }
 
 model User{

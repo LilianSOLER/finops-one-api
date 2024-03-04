@@ -1,7 +1,5 @@
 import {
   ForbiddenException,
-  HttpException,
-  HttpStatus,
   Injectable,
 } from '@nestjs/common';
 import { AuthDto } from './dto';
@@ -38,7 +36,7 @@ export class AuthService {
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {
         if (err.code === 'P2002') {
-          throw new ForbiddenException('credentials already exist');
+          throw new ForbiddenException('Credentials already exist');
         }
       }
       throw err;
@@ -58,7 +56,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new ForbiddenException('email or password incorrect');
+      throw new ForbiddenException('Email or password incorrect');
     }
 
     //check hash

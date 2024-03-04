@@ -43,6 +43,6 @@ pnpm-lock.yaml
 .env
 .env.*
 
-# Prisma migrations
+# Debug File
 
-prisma/migrations/migration_lock.toml
+src/aws/debug-data.js

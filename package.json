@@ -26,8 +26,7 @@
     "db:dev:generate": "npx prisma generate",
     "db:dev:migrate": "npx prisma migrate dev --name",
     "db:dev:pull": "npx prisma migrate pull",
-    "db:dev:push": "npx prisma migrate push",
-    "db:dev:interact": "docker exec -it finops-one-api-db-dev bash"
+    "db:dev:push": "npx prisma migrate push"
   },
   "dependencies": {
     "@aws-sdk/client-cost-explorer": "^3.504.0",

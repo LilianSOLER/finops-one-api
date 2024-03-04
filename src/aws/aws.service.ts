@@ -5,7 +5,6 @@ import {
   NotFoundException,
   Response,
 } from '@nestjs/common';
-//const AWS = require('aws-sdk');
 import * as AWS from 'aws-sdk';
 import { CredentialDto } from './dto/credential.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -17,151 +16,17 @@ const credentials = {
   access_key: 'AKIA5FTZCBQ64VG6W5S2',
   secret_key: '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',
 };
-function hier(date: Date) {
+function calculateYesterday(date: Date) {
   const yesterday = new Date(date);
   yesterday.setDate(yesterday.getDate() - 1);
   return yesterday;
 }
 
-const debug_data = {
-  GroupDefinitions: [{ Type: 'DIMENSION', Key: 'SERVICE' }],
-  ResultsByTime: [
-    {
-      TimePeriod: { Start: '2024-02-01', End: '2024-02-02' },
-      Total: {},
-      Groups: [
-        {
-          Keys: ['AWS Service Catalog'],
-          Metrics: {
-            AmortizedCost: { Amount: '0', Unit: 'USD' },
-            BlendedCost: { Amount: '0', Unit: 'USD' },
-            NetAmortizedCost: { Amount: '0', Unit: 'USD' },
-            NetUnblendedCost: { Amount: '0', Unit: 'USD' },
-            NormalizedUsageAmount: { Amount: '0', Unit: 'N/A' },
-            UnblendedCost: { Amount: '0', Unit: 'USD' },
-            UsageQuantity: { Amount: '1', Unit: 'N/A' },
-          },
-        },
-        {
-          Keys: ['Tax'],
-          Metrics: {
-            AmortizedCost: { Amount: '0.07', Unit: 'USD' },
-            BlendedCost: { Amount: '0.07', Unit: 'USD' },
-            NetAmortizedCost: { Amount: '0.07', Unit: 'USD' },
-            NetUnblendedCost: { Amount: '0.07', Unit: 'USD' },
-            NormalizedUsageAmount: { Amount: '0', Unit: 'N/A' },
-            UnblendedCost: { Amount: '0.07', Unit: 'USD' },
-            UsageQuantity: { Amount: '0', Unit: 'N/A' },
-          },
-        },
-      ],
-      Estimated: true,
-    },
-    {
-      TimePeriod: { Start: '2024-02-02', End: '2024-02-03' },
-      Total: {},
-      Groups: [
-        {
-          Keys: ['AWS Systems Manager'],
-          Metrics: {
-            AmortizedCost: { Amount: '0.000039', Unit: 'USD' },
-            BlendedCost: { Amount: '0.000039', Unit: 'USD' },
-            NetAmortizedCost: { Amount: '0.000039', Unit: 'USD' },
-            NetUnblendedCost: { Amount: '0.000039', Unit: 'USD' },
-            NormalizedUsageAmount: { Amount: '0', Unit: 'N/A' },
-            UnblendedCost: { Amount: '0.000039', Unit: 'USD' },
-            UsageQuantity: { Amount: '1', Unit: 'N/A' },
-          },
-        },
-      ],
-      Estimated: true,
-    },
-    {
-      TimePeriod: { Start: '2024-02-03', End: '2024-02-04' },
-      Total: {
-        AmortizedCost: { Amount: '0', Unit: 'USD' },
-        BlendedCost: { Amount: '0', Unit: 'USD' },
-        NetAmortizedCost: { Amount: '0', Unit: 'USD' },
-        NetUnblendedCost: { Amount: '0', Unit: 'USD' },
-        NormalizedUsageAmount: { Amount: '0', Unit: 'N/A' },
-        UnblendedCost: { Amount: '0', Unit: 'USD' },
-        UsageQuantity: { Amount: '0', Unit: 'N/A' },
-      },
-      Groups: [],
-      Estimated: true,
-    },
-    {
-      TimePeriod: { Start: '2024-02-04', End: '2024-02-05' },
-      Total: {},
-      Groups: [
-        {
-          Keys: ['AWS Cost Explorer'],
-          Metrics: {
-            AmortizedCost: { Amount: '0.04', Unit: 'USD' },
-            BlendedCost: { Amount: '0.04', Unit: 'USD' },
-            NetAmortizedCost: { Amount: '0.04', Unit: 'USD' },
-            NetUnblendedCost: { Amount: '0.04', Unit: 'USD' },
-            NormalizedUsageAmount: { Amount: '0', Unit: 'N/A' },
-            UnblendedCost: { Amount: '0.04', Unit: 'USD' },
-            UsageQuantity: { Amount: '4', Unit: 'N/A' },
-          },
-        },
-      ],
-      Estimated: true,
-    },
-    {
-      TimePeriod: { Start: '2024-02-05', End: '2024-02-06' },
-      Total: {},
-      Groups: [
-        {
-          Keys: ['AWS Cost Explorer'],
-          Metrics: {
-            AmortizedCost: { Amount: '0.3', Unit: 'USD' },
-            BlendedCost: { Amount: '0.3', Unit: 'USD' },
-            NetAmortizedCost: { Amount: '0.3', Unit: 'USD' },
-            NetUnblendedCost: { Amount: '0.3', Unit: 'USD' },
-            NormalizedUsageAmount: { Amount: '0', Unit: 'N/A' },
-            UnblendedCost: { Amount: '0.3', Unit: 'USD' },
-            UsageQuantity: { Amount: '30', Unit: 'N/A' },
-          },
-        },
-      ],
-      Estimated: true,
-    },
-    {
-      TimePeriod: { Start: '2024-02-06', End: '2024-02-07' },
-      Total: {
-        AmortizedCost: { Amount: '0', Unit: 'USD' },
-        BlendedCost: { Amount: '0', Unit: 'USD' },
-        NetAmortizedCost: { Amount: '0', Unit: 'USD' },
-        NetUnblendedCost: { Amount: '0', Unit: 'USD' },
-        NormalizedUsageAmount: { Amount: '0', Unit: 'N/A' },
-        UnblendedCost: { Amount: '0', Unit: 'USD' },
-        UsageQuantity: { Amount: '0', Unit: 'N/A' },
-      },
-      Groups: [],
-      Estimated: true,
-    },
-    {
-      TimePeriod: { Start: '2024-02-07', End: '2024-02-08' },
-      Total: {
-        AmortizedCost: { Amount: '0', Unit: 'USD' },
-        BlendedCost: { Amount: '0', Unit: 'USD' },
-        NetAmortizedCost: { Amount: '0', Unit: 'USD' },
-        NetUnblendedCost: { Amount: '0', Unit: 'USD' },
-        NormalizedUsageAmount: { Amount: '0', Unit: 'N/A' },
-        UnblendedCost: { Amount: '0', Unit: 'USD' },
-        UsageQuantity: { Amount: '0', Unit: 'N/A' },
-      },
-      Groups: [],
-      Estimated: true,
-    },
-  ],
-  DimensionValueAttributes: [],
-};
+
 
 @Injectable({})
 export class AwsService {
+  private ce = new AWS.CostExplorer();
   constructor(private prismaService: PrismaService) {
     AWS.config.update({
       accessKeyId: credentials.access_key,
@@ -171,34 +36,21 @@ export class AwsService {
   }
 
   async getCost() {
-    //ajouter ici le code de permettant de récupérer uniquement les informations correspondant au compte lié
-    const ce = new AWS.CostExplorer();
 
     //retrieve and update aws credentials and set it depending on which project belong the user
-    //ajouter tout ça dans un boucle qui l'effectue pour tous les projets
-
+    //TODO : add a loop that does this for every existing projects
+    //TODO : add the code that update the access for the current project
     //set the query (date)
-    const ajd = new Date();
-    const Hier = hier(ajd);
+    const today = new Date();
+    const yesterday = calculateYesterday(today);
 
-    console.log(
-      'Retrieve datas from : ',
-      Hier.toISOString().split('T')[0],
-      ' to ',
-      ajd.toISOString().split('T')[0],
-    );
 
     const params = {
       TimePeriod: {
-        Start: Hier.toISOString().split('T')[0],
-        End: ajd.toISOString().split('T')[0],
+        Start: yesterday.toISOString().split('T')[0],
+        End: today.toISOString().split('T')[0],
       },
-      // const params = {
-      //     TimePeriod: {
-      //         Start: "2024-02-01",
-      //         End: ajd.toISOString().split('T')[0]
-      //     },
-
+   
       Granularity: 'DAILY',
       GroupBy: [{ Type: 'DIMENSION', Key: 'SERVICE' }],
       Metrics: [
@@ -212,7 +64,7 @@ export class AwsService {
       ],
     };
 
-    const data = ce.getCostAndUsage(
+    const data = this.ce.getCostAndUsage(
       params,
       (err: Error | null, data: AWS.CostExplorer.GetCostAndUsageResponse) => {
         if (err) {
@@ -224,7 +76,6 @@ export class AwsService {
     );
     // from promise exxtract and store the date in DB
     const res = await data.promise();
-    //const res = debug_data;
     if (!res.ResultsByTime) {
       throw new InternalServerErrorException(
         'error while fetching data from aws service',
@@ -328,7 +179,7 @@ export class AwsService {
     try {
       const res = await this.prismaService.aws_credentials.create({
         data: {
-          //createAt : date.getDay().toString(),
+          //createdAt : date.getDay().toString(),
           accessKeyId: dto.accessKeyId,
           secretAccessKey: dto.secretAccessKey,
         },
@@ -349,7 +200,7 @@ export class AwsService {
     }
   }
 
-  //Doit seulement être accèssible pour les rôles admin de projet
+  //TODO : set access control
 
   async getCredentials() {
     const res = await this.prismaService.aws_credentials.findMany();
@@ -358,10 +209,9 @@ export class AwsService {
     }
   }
 
-  // ajouter le CRUD
 
   async getMetrics() {
-    const res = await this.prismaService.aws_metrics.findMany({
+    return await this.prismaService.aws_metrics.findMany({
       select: {
         service: true,
         amortizedCost: true,
@@ -369,11 +219,9 @@ export class AwsService {
         blendedCost: true,
         netUnblendedCost: true,
         netAmortizedCost: true,
-        //usageQuantity:true,
         normalizedUsageAmount: true,
       },
     });
-    return res;
   }
 
   async getCostServices() {
@@ -398,7 +246,6 @@ export class AwsService {
     return tmp;
   }
 
-  //je ne mets pas d'update car ça ne me parait pas inutile de modifier des métrics
 
   async updateCredentials(credDto: CredentialDto) {
     const cred = await this.prismaService.aws_credentials.findUnique({

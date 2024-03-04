@@ -6,9 +6,4 @@ import { AwsService } from './aws.service';
   controllers: [AwsController],
   providers: [AwsService],
 })
-export class AwsModule {
-  // constructor(
-  //     private awsCtrl : AwsController,
-  //     private awsService : AwsService
-  //     ){}
-}
+export class AwsModule {}
