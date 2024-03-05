@@ -15,7 +15,7 @@ services:
       - 'traefik.http.routers.${API_CONTAINER_NAME}.entrypoints=${TRAEFIK_API_ENTRYPOINT}'
     deploy:
       replicas: ${APP_REPLICAS}
-
+    
   database:
     container_name: ${DB_CONTAINER_NAME}
     image : ${DB_IMAGE}
@@ -35,9 +35,12 @@ services:
 volumes:
   db-data:
     name: ${DB_VOLUME_NAME}
- 
+                
+
 networks:
     traefik:
       name: ${TRAEFIK_NETWORK_NAME}
       external: true
     internal_network:
+
+  

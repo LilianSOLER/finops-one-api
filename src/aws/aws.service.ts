@@ -13,8 +13,8 @@ import type { Metric, MetricGroupeBy } from './types';
 import { RemoveCredentialDto } from './dto/rm-credential.dto';
 
 const credentials = {
-  access_key: 'AKIA5FTZCBQ64VG6W5S2',
-  secret_key: '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',
+  access_key: 'AKIA5FTZCBQ6TH57OP4P',
+  secret_key: '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',
 };
 function calculateYesterday(date: Date) {
   const yesterday = new Date(date);
@@ -24,7 +24,7 @@ function calculateYesterday(date: Date) {
 
 @Injectable({})
 export class AwsService {
-  private ce = new AWS.CostExplorer();
+  //private ce = new AWS.CostExplorer();
   constructor(private prismaService: PrismaService) {
     AWS.config.update({
       accessKeyId: credentials.access_key,
@@ -38,6 +38,12 @@ export class AwsService {
     //TODO : add a loop that does this for every existing projects
     //TODO : add the code that update the access for the current project
     //set the query (date)
+    // const ssm = new AWS.SSM({
+    //   accessKeyId: credentials.access_key,
+    //   secretAccessKey: credentials.secret_key,
+    //   region: 'eu-west-3',
+    // });
+    const ce = new AWS.CostExplorer(); // obligé de le mettre ici sinon ça marche pas
     const today = new Date();
     const yesterday = calculateYesterday(today);
 
@@ -59,8 +65,7 @@ export class AwsService {
         'UNBLENDED_COST',
       ],
     };
-
-    const data = this.ce.getCostAndUsage(
+    const data = ce.getCostAndUsage(
       params,
       (err: Error | null, data: AWS.CostExplorer.GetCostAndUsageResponse) => {
         if (err) {
@@ -77,7 +82,6 @@ export class AwsService {
         'error while fetching data from aws service',
       );
     }
-
     const metrics: Metric[] = [];
     for (let i = 0; i < res.ResultsByTime.length; i++) {
       let index = res.ResultsByTime.at(i);
@@ -150,21 +154,32 @@ export class AwsService {
     }
 
     // add in the database
-    for (let i = 0; i < metrics.length; i++) {
-      const metric = await this.prismaService.aws_metrics.create({
-        data: {
-          timePeriod: metrics[i].timePeriod.toISOString(),
-          service: metrics[i].service,
-          amortizedCost: metrics[i].amortizedCost,
-          blendedCost: metrics[i].blendedCost,
-          netAmortizedCost: metrics[i].netAmortizedCost,
-          unblendedCost: metrics[i].unblendedCost,
-          netUnblendedCost: metrics[i].netUnblendedCost,
-          usageQuantity: metrics[i].usageQuantity,
-          normalizedUsageAmount: metrics[i].normalizedUsageAmount,
-        },
-      });
-    }
+    // for (let i = 0; i < metrics.length; i++) {
+    //   const metric = await this.prismaService.awsMetrics.create({
+    //     data: {
+    //       timePeriod: metrics[i].timePeriod.toISOString(),
+    //       service: metrics[i].service,
+    //       amortizedCost: metrics[i].amortizedCost,
+    //       blendedCost: metrics[i].blendedCost,
+    //       netAmortizedCost: metrics[i].netAmortizedCost,
+    //       unblendedCost: metrics[i].unblendedCost,
+    //       netUnblendedCost: metrics[i].netUnblendedCost,
+    //       usageQuantity: metrics[i].usageQuantity,
+    //       normalizedUsageAmount: metrics[i].normalizedUsageAmount,
+    //     },
+    //   });
+    // }
+    metrics.map((metric) => {
+      return {
+        ...metric,
+        timePeriod: metric.timePeriod.toISOString(),
+      };
+    });
+
+    await this.prismaService.awsMetrics.createMany({
+      data: metrics,
+    });
+
     return metrics;
   }
 
@@ -173,15 +188,14 @@ export class AwsService {
     const date = new Date();
 
     try {
-      const res = await this.prismaService.aws_credentials.create({
+      const res = await this.prismaService.awsCredentials.create({
         data: {
-          //createdAt : date.getDay().toString(),
+          createdAt : new Date().toISOString(),
           accessKeyId: dto.accessKeyId,
           secretAccessKey: dto.secretAccessKey,
         },
       });
 
-      console.log(res);
 
       if (res) {
         return res;
@@ -199,14 +213,14 @@ export class AwsService {
   //TODO : set access control
 
   async getCredentials() {
-    const res = await this.prismaService.aws_credentials.findMany();
+    const res = await this.prismaService.awsCredentials.findMany();
     if (res) {
       return res;
     }
   }
 
   async getMetrics() {
-    return await this.prismaService.aws_metrics.findMany({
+    return await this.prismaService.awsMetrics.findMany({
       select: {
         service: true,
         amortizedCost: true,
@@ -220,7 +234,7 @@ export class AwsService {
   }
 
   async getCostServices() {
-    const res = await this.prismaService.aws_metrics.groupBy({
+    const res = await this.prismaService.awsMetrics.groupBy({
       by: ['service'],
       _sum: {
         blendedCost: true,
@@ -242,7 +256,7 @@ export class AwsService {
   }
 
   async updateCredentials(credDto: CredentialDto) {
-    const cred = await this.prismaService.aws_credentials.findUnique({
+    const cred = await this.prismaService.awsCredentials.findUnique({
       where: {
         accessKeyId: credDto.accessKeyId,
       },
@@ -252,7 +266,7 @@ export class AwsService {
       throw new NotFoundException('this credential was not found');
     }
 
-    return await this.prismaService.aws_credentials.update({
+    return await this.prismaService.awsCredentials.update({
       where: {
         accessKeyId: credDto.accessKeyId,
       },
@@ -264,7 +278,7 @@ export class AwsService {
   }
 
   async removeCredential(credDto: RemoveCredentialDto) {
-    return await this.prismaService.aws_credentials.delete({
+    return await this.prismaService.awsCredentials.delete({
       where: {
         accessKeyId: credDto.accessKeyId,
       },
