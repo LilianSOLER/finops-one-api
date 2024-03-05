@@ -30,7 +30,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     restart: always
-        
+          
 
 volumes:
   db-data:

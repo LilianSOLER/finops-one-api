@@ -7,6 +7,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { ProjectModule } from './project/project.module';
 import { CompanyModule } from './company/company.module';
+import { HttpModule } from '@nestjs/axios';
+import { ScheduleModule } from '@nestjs/schedule';
+import { AzureModule } from './azure/azure.module';
 
 /**
  * Main module of the NestJS application.
@@ -16,8 +19,11 @@ import { CompanyModule } from './company/company.module';
   imports: [
     // Import ConfigModule to load environment variables
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
+    HttpModule,
     AuthModule,
     PrismaModule,
+    AzureModule,
     UserModule,
     ProjectModule,
     CompanyModule,

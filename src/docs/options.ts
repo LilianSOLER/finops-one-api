@@ -15,6 +15,7 @@ const config = new DocumentBuilder()
   .addTag('users')
   .addTag('projects')
   .addTag('companies')
+  .addTag('azure')
   .addBearerAuth() // Enable bearer token authentication
   .build(); // Build the configuration
 
