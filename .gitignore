@@ -42,3 +42,6 @@ pnpm-lock.yaml
 # Environment files
 .env
 .env.*
+
+# Debug File
+src/aws/debug-data.js

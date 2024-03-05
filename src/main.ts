@@ -22,9 +22,6 @@ async function bootstrap() {
       whitelist: true, // This will remove any properties that are not in the DTO
     }),
   );
-
-  // Start the server
-  await app.listen(3000);
+  await app.listen(3333);
 }
-
 bootstrap();
