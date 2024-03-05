@@ -44,14 +44,15 @@ export class AzureService {
       );
       const accessToken = tokenResponse.token;
       const currentDate = new Date();
-      const currentDateString = `${currentDate.getFullYear()}-${(
-        currentDate.getMonth() + 1
-      )
-        .toString()
-        .padStart(2, '0')}-${currentDate
-        .getDate()
-        .toString()
-        .padStart(2, '0')}`;
+
+      // function to format date to 'YYYY-MM-DD' format to use in the API request
+      function formatDate(date: Date): string {
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+      const currentDateString = formatDate(currentDate);
 
       // Making a GET request to the /subscriptions endpoint. This returns a list of subscriptions for the authenticated user.
       // https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/list?view=rest-resources-2022-12-01&tabs=HTTP
@@ -72,7 +73,59 @@ export class AzureService {
         // Making a GET request to the /billingProperty endpoint to retrieve the billing account ID for the subscription.
         // https://learn.microsoft.com/en-us/rest/api/billing/billing-property/get?view=rest-billing-2020-05-01&tabs=HTTP
         const billingResponse = await client.billingPropertyOperations.get();
-        const billingAccountId = billingResponse.billingAccountId;
+        const billingAccountId = billingResponse.billingAccountId; // the variable looks like this "billingAccountId": "/providers/Microsoft.Billing/billingAccounts/00000000-0000-0000-0000-000000000000_00000000-0000-0000-0000-000000000000"
+
+        // Making a GET request to the /billingSubscriptions endpoint to retrieve the billing subscriptions for the subscription.
+        // https://learn.microsoft.com/en-us/rest/api/billing/billing-subscriptions/list-by-billing-account?view=rest-billing-2021-10-01&tabs=HTTP
+        const billingSubscriptions = `${this.baseUrl}${billingAccountId}/billingSubscriptions?api-version=2021-10-01`;
+        const billingSubscriptionsResponse = await axios.get(
+          billingSubscriptions,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+
+        // if there are no values in the database, we need to retrieve the earliest purchase date of all billing subscriptions, else we make a request from the yesterday date
+        const valuesCount = await this.prisma.resourcesCostsValues.count();
+        let beginningDate = null;
+        if (valuesCount > 0) {
+          const yesterday = currentDate;
+          yesterday.setDate(currentDate.getDate() - 1);
+          beginningDate = formatDate(yesterday);
+        } else {
+          // Find the earliest purchase date of all billing subscriptions
+          let purchaseDate = null;
+          for (
+            let i = 0;
+            i < billingSubscriptionsResponse.data.totalCount;
+            i++
+          ) {
+            if (purchaseDate === null) {
+              purchaseDate = new Date(
+                billingSubscriptionsResponse.data.value[
+                  i
+                ].properties.purchaseDate,
+              );
+            } else if (
+              new Date(
+                billingSubscriptionsResponse.data.value[
+                  i
+                ].properties.purchaseDate,
+              ) < new Date(purchaseDate)
+            ) {
+              purchaseDate = new Date(
+                billingSubscriptionsResponse.data.value[
+                  i
+                ].properties.purchaseDate,
+              );
+            }
+          }
+          if (purchaseDate !== null) {
+            beginningDate = formatDate(purchaseDate);
+          }
+        }
 
         const resourcesCostsUrl = `${this.baseUrl}${billingAccountId}/providers/Microsoft.CostManagement/query?api-version=2023-11-01`;
 
@@ -81,7 +134,7 @@ export class AzureService {
           type: 'ActualCost',
           timeframe: 'Custom',
           timePeriod: {
-            from: '2023-10-01',
+            from: beginningDate,
             to: currentDateString,
           },
           dataset: {
@@ -99,7 +152,8 @@ export class AzureService {
           },
         };
 
-        // Making a POST request to the /query endpoint to retrieve cost data for every ressource of the current subscription.
+        // Making a POST request to the /query endpoint to retrieve cost data for every ressource of the current subscription and grouping them by resource group and resource type.
+        // https://learn.microsoft.com/en-us/rest/api/cost-management/query/usage?view=rest-cost-management-2023-11-01&tabs=HTTP#billingaccountquerygrouping-legacy
         const resourcesCostsResponse = await axios.post(
           resourcesCostsUrl,
           resourcesCostsBody,

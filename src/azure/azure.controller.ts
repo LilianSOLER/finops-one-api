@@ -1,7 +1,7 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { AzureService } from './azure.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-//import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @ApiTags('azure')
 @ApiResponse({
@@ -25,12 +25,11 @@ export class AzureController {
   })
   @HttpCode(HttpStatus.CREATED)
 
-  //@Cron(CronExpression.EVERY_DAY_AT_1AM)
   /**
-   * Retrieves the Azure costs data.
+   * Retrieves the Azure costs data and stores it in the database.
    * @returns Promise that resolves to the Azure costs data.
    */
-  @Get('cost-data')
+  @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async getCostData(): Promise<any> {
     const data = await this.azureService.getCostData();
     return data;
@@ -42,7 +41,6 @@ export class AzureController {
    */
   @Get('metrics')
   async getAzureMetrics(): Promise<any> {
-    console.log('Query Azure metrics');
     const data = await this.azureService.getAzureMetrics();
     return data;
   }
