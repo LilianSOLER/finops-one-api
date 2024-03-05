@@ -8,4 +8,8 @@ export class CredentialDto {
   @IsString()
   @IsNotEmpty()
   secretAccessKey: string;
+
+  @IsString()
+  @IsNotEmpty()
+  projectId: string;
 }

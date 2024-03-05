@@ -8,6 +8,7 @@ export interface Metric {
   netUnblendedCost: number;
   usageQuantity: number;
   normalizedUsageAmount: number;
+  projectId: string;
 }
 
 export interface MetricGroupeBy {

@@ -45,6 +45,10 @@ model Project {
 
   company   Company @relation(fields: [companyId], references: [id])
   companyId String
+
+  awsCredential AwsCredentials?
+
+  awsMetrics AwsMetrics[]
 }
 
 model ProjectMember {
@@ -102,7 +106,7 @@ enum UserRole {
 }
 
 model AwsMetrics{
-    id Int @id @default(autoincrement())
+    id String @id @default(uuid())
     timePeriod DateTime?
     service String?
     amortizedCost Float?
@@ -113,15 +117,20 @@ model AwsMetrics{
     normalizedUsageAmount Int?
     usageQuantity Int?
     // TODO: Add link to project table
+
+    project Project @relation(fields:[projectId], references:[id])
+    projectId String? @unique
 }
 
 model AwsCredentials{
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   createdAt DateTime
   accessKeyId String @unique
   secretAccessKey String
 
     // TODO : Add account, user ou project for the associated credentials
+    project Project @relation(fields:[projectId], references:[id])
+    projectId String @unique
 }
 
 enum CompanyRole {

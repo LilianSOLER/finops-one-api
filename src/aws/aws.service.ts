@@ -102,6 +102,7 @@ export class AwsService {
               netUnblendedCost: 0,
               usageQuantity: 0,
               normalizedUsageAmount: 0,
+              projectId: "à implémenter",
             };
 
             if (curr_time_period) {
@@ -173,6 +174,7 @@ export class AwsService {
       return {
         ...metric,
         timePeriod: metric.timePeriod.toISOString(),
+        //projectId: "à implémenter",
       };
     });
 
@@ -193,6 +195,8 @@ export class AwsService {
           createdAt: new Date().toISOString(),
           accessKeyId: dto.accessKeyId,
           secretAccessKey: dto.secretAccessKey,
+          projectId : dto.projectId,
+
         },
       });
 
