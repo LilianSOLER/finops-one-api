@@ -190,12 +190,11 @@ export class AwsService {
     try {
       const res = await this.prismaService.awsCredentials.create({
         data: {
-          createdAt : new Date().toISOString(),
+          createdAt: new Date().toISOString(),
           accessKeyId: dto.accessKeyId,
           secretAccessKey: dto.secretAccessKey,
         },
       });
-
 
       if (res) {
         return res;
