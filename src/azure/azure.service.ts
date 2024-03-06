@@ -274,7 +274,7 @@ export class AzureService {
     // Parse and store Budgets data
     await Promise.all(
       budgetsData.value.map(async (budgetData: any) => {
-        return await this.prisma.budget.upsert({
+        return await this.prisma.budgets.upsert({
           where: { name: budgetData.name },
           update: {
             id: budgetData.id,
@@ -308,7 +308,7 @@ export class AzureService {
     // Parse and store Alerts data
     await Promise.all(
       alertsData.value.map(async (alertData: any) => {
-        return await this.prisma.alert.upsert({
+        return await this.prisma.alerts.upsert({
           where: { name: alertData.name },
           update: {
             id: alertData.id,
@@ -381,9 +381,9 @@ export class AzureService {
       },
     });
 
-    const budgets = await this.prisma.budget.findMany();
+    const budgets = await this.prisma.budgets.findMany();
 
-    const alerts = await this.prisma.alert.findMany();
+    const alerts = await this.prisma.alerts.findMany();
 
     return {
       resourcesCosts,

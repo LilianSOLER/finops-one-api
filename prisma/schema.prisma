@@ -126,7 +126,7 @@ model ResourcesCostsValues {
   @@unique([usageDate, resourceGroup, resourceType])
 }
 
-model Budget {
+model Budgets {
   id           String
   name         String   @id
   type         String
@@ -140,7 +140,7 @@ model Budget {
   category     String
 }
 
-model Alert {
+model Alerts {
   id                     String
   name                   String   @id
   type                   String

@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   ResourcesCosts,
   ResourcesCostsValues,
-  Budget,
-  Alert,
+  Budgets,
+  Alerts,
 } from '@prisma/client';
 
 export class ResourcesCostsEntity implements ResourcesCosts {
@@ -55,7 +55,7 @@ export class ResourcesCostsValuesEntity implements ResourcesCostsValues {
   ResourcesCostsId: string;
 }
 
-export class BudgetEntity implements Budget {
+export class BudgetEntity implements Budgets {
   @ApiProperty({
     description: 'The unique identifier for the budget',
     type: String,
@@ -97,7 +97,7 @@ export class BudgetEntity implements Budget {
   category: string;
 }
 
-export class AlertEntity implements Alert {
+export class AlertEntity implements Alerts {
   @ApiProperty({
     description: 'The unique identifier for the alert',
     type: String,
