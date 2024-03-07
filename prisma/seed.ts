@@ -11,10 +11,15 @@ import {
   createUsers,
 } from './seeds';
 import { PrismaClient } from '@prisma/client';
+import {
+  clearawscredentials,
+  createcredentials,
+} from './seeds/aws_credentials';
 
 const prisma = new PrismaClient();
 
 async function main() {
+  await clearawscredentials();
   await clearProjectMembers();
   await clearCompanyMembers();
   await clearProjects();
@@ -25,6 +30,7 @@ async function main() {
   await createCompanyMembers(200);
   await createProjects(50);
   await createProjectMembers(50);
+  await createcredentials(50);
 }
 
 main()
