@@ -118,7 +118,7 @@ model AwsMetrics {
   usageQuantity         Int?
 
   project   Project @relation(fields: [projectId], references: [id])
-  projectId String  @unique
+  projectId String
 }
 
 model AwsCredentials {
