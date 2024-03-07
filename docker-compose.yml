@@ -2,11 +2,11 @@ version: "3.7"
 
 services:
   api:
+    container_name: ${API_CONTAINER_NAME}
     image: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
     restart: always
     networks:
         - traefik
-        - internal_network
     ports:
         - ${API_PORT_OUT}:${API_PORT_IN}
     labels:

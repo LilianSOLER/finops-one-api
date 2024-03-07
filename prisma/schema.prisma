@@ -101,6 +101,29 @@ enum UserRole {
   USER
 }
 
+model AwsMetrics{
+    id Int @id @default(autoincrement())
+    timePeriod DateTime?
+    service String?
+    amortizedCost Float?
+    blendedCost Float?
+    unblendedCost Float?
+    netUnblendedCost Float?
+    netAmortizedCost Float?
+    normalizedUsageAmount Int?
+    usageQuantity Int?
+    // TODO: Add link to project table
+}
+
+model AwsCredentials{
+  id Int @id @default(autoincrement())
+  createdAt DateTime
+  accessKeyId String @unique
+  secretAccessKey String
+
+    // TODO : Add account, user ou project for the associated credentials
+}
+
 enum CompanyRole {
   OWNER
   ADMIN
