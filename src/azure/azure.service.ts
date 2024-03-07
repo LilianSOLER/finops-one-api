@@ -5,11 +5,12 @@ import { DefaultAzureCredential } from '@azure/identity';
 import { BillingManagementClient } from '@azure/arm-billing';
 import { SubscriptionClient } from '@azure/arm-resources-subscriptions';
 import { PrismaClient } from '@prisma/client';
+import { ConfigService } from '@nestjs/config';
 
 // AzureService handles interactions with Azure's APIs. It retrieves cost data and stores it in the database.
 @Injectable()
 export class AzureService {
-  private baseUrl = 'https://management.azure.com';
+  private baseUrl: string;
   private readonly logger = new Logger(AzureService.name);
   private readonly prisma = new PrismaClient();
 
@@ -17,7 +18,8 @@ export class AzureService {
    * Constructor initializes the AzureService by calling the getCostData method.
    * If an error occurs during this process, it is logged.
    */
-  constructor() {
+  constructor(config: ConfigService) {
+    this.baseUrl = config.get('AZURE_BASE_URL') || '';
     this.getCostData().catch((error) => {
       this.logger.error('Error while getting cost data', error.stack);
     });
@@ -41,18 +43,18 @@ export class AzureService {
       // Using DefaultAzureCredential for authentication
       const credential = new DefaultAzureCredential();
       const tokenResponse = await credential.getToken(
-        'https://management.azure.com/.default',
+        `${this.baseUrl}.default`,
       );
       const accessToken = tokenResponse.token;
       const currentDate = new Date();
 
-      // function to format date to 'YYYY-MM-DD' format to use in the API request
-      function formatDate(date: Date): string {
+      // Function to format date to 'YYYY-MM-DD' format to use in the API request
+      const formatDate = (date: Date): string => {
         const year = date.getFullYear();
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const day = date.getDate().toString().padStart(2, '0');
         return `${year}-${month}-${day}`;
-      }
+      };
       const currentDateString = formatDate(currentDate);
 
       // Using the SubscriptionClient to interact with the Azure Subscriptions API. This returns a list of subscriptions for the authenticated user.
@@ -73,9 +75,9 @@ export class AzureService {
           // Making a GET request to the /billingProperty endpoint to retrieve the billing account ID for the subscription.
           // https://learn.microsoft.com/en-us/rest/api/billing/billing-property/get?view=rest-billing-2020-05-01&tabs=HTTP
           const billingResponse = await client.billingPropertyOperations.get();
-          const billingAccountId = billingResponse.billingAccountId; // the variable looks like this "billingAccountId": "/providers/Microsoft.Billing/billingAccounts/00000000-0000-0000-0000-000000000000_00000000-0000-0000-0000-000000000000"
+          const billingAccountId = billingResponse.billingAccountId; // The variable looks like this "billingAccountId": "/providers/Microsoft.Billing/billingAccounts/00000000-0000-0000-0000-000000000000_00000000-0000-0000-0000-000000000000"
 
-          // if there are no values in the database, we need to retrieve the earliest purchase date of all billing subscriptions, else we make a request from the yesterday date
+          // If there are no values in the database, we need to retrieve the earliest purchase date of all billing subscriptions, else we make a request from the yesterday date
           const valuesCount = await this.prisma.resourcesCostsValues.count();
           let beginningDate = null;
           if (valuesCount > 0) {
@@ -96,34 +98,17 @@ export class AzureService {
               },
             );
 
-            let purchaseDate = null;
-            for (
-              let i = 0;
-              i < billingSubscriptionsResponse.data.totalCount;
-              i++
-            ) {
-              if (purchaseDate === null) {
-                purchaseDate = new Date(
-                  billingSubscriptionsResponse.data.value[
-                    i
-                  ].properties.purchaseDate,
-                );
-              } else if (
-                new Date(
-                  billingSubscriptionsResponse.data.value[
-                    i
-                  ].properties.purchaseDate,
-                ) < new Date(purchaseDate)
-              ) {
-                purchaseDate = new Date(
-                  billingSubscriptionsResponse.data.value[
-                    i
-                  ].properties.purchaseDate,
-                );
-              }
-            }
-            if (purchaseDate !== null) {
-              beginningDate = formatDate(purchaseDate);
+            const purchaseDates = billingSubscriptionsResponse.data.value.map(
+              (subscription: { properties: { purchaseDate: string } }) =>
+                new Date(subscription.properties.purchaseDate),
+            );
+            const earliestPurchaseDate =
+              purchaseDates.length > 0
+                ? new Date(Math.min(...purchaseDates))
+                : null;
+
+            if (earliestPurchaseDate !== null) {
+              beginningDate = formatDate(earliestPurchaseDate);
             }
           }
 
@@ -374,7 +359,7 @@ export class AzureService {
    * The getAzureMetrics method retrieves cost, budget, and alert data from the database.
    * @returns {Promise<any>} An object containing the cost, budget, and alert data.
    */
-  async getAzureMetrics(): Promise<any> {
+  async getAzureMetrics() {
     const resourcesCosts = await this.prisma.resourcesCosts.findMany({
       include: {
         values: true,
@@ -408,27 +393,33 @@ export class AzureService {
       },
     });
 
-    const groupedMetrics: {
-      [key: string]: { [key: string]: { cost: number; currency: string } };
-    } = {};
+    const groupedMetrics = metrics.reduce(
+      (acc, metric) => {
+        const dateKey = metric.usageDate.toISOString().split('T')[0]; // Convert date to YYYY-MM-DD format
+        const groupKey = metric.resourceGroup;
 
-    metrics.forEach((metric) => {
-      const dateKey = metric.usageDate.toISOString().split('T')[0]; // Convert date to YYYY-MM-DD format
-      const groupKey = metric.resourceGroup;
+        // Initialize groupedMetrics[typeKey] if it doesn't exist
+        if (!acc[groupKey]) {
+          acc[groupKey] = {};
+        }
 
-      if (!groupedMetrics[groupKey]) {
-        groupedMetrics[groupKey] = {};
-      }
+        // Initialize groupedMetrics[typeKey][dateKey] if it doesn't exist
+        if (!acc[groupKey][dateKey]) {
+          acc[groupKey][dateKey] = {
+            cost: 0,
+            currency: metric.currency,
+          };
+        }
 
-      if (!groupedMetrics[groupKey][dateKey]) {
-        groupedMetrics[groupKey][dateKey] = {
-          cost: 0,
-          currency: metric.currency,
-        };
-      }
+        // Increment cost for groupedMetrics[typeKey][dateKey]
+        acc[groupKey][dateKey].cost += metric.cost;
 
-      groupedMetrics[groupKey][dateKey].cost += metric.cost;
-    });
+        return acc;
+      },
+      {} as {
+        [key: string]: { [key: string]: { cost: number; currency: string } };
+      },
+    );
 
     return groupedMetrics;
   }
@@ -448,25 +439,32 @@ export class AzureService {
       },
     });
 
-    const groupedMetrics: {
-      [key: string]: { [key: string]: { cost: number; currency: string } };
-    } = {};
+    const groupedMetrics = metrics.reduce(
+      (acc, metric) => {
+        const dateKey = metric.usageDate.toISOString().split('T')[0]; // Convert date to YYYY-MM-DD format
+        const typeKey = metric.resourceType;
+        // Initialize groupedMetrics[typeKey] if it doesn't exist
+        if (!acc[typeKey]) {
+          acc[typeKey] = {};
+        }
 
-    metrics.forEach((metric) => {
-      const dateKey = metric.usageDate.toISOString().split('T')[0]; // Convert date to YYYY-MM-DD format
-      const typeKey = metric.resourceType;
-      if (!groupedMetrics[typeKey]) {
-        groupedMetrics[typeKey] = {};
-      }
-      if (!groupedMetrics[typeKey][dateKey]) {
-        groupedMetrics[typeKey][dateKey] = {
-          cost: 0,
-          currency: metric.currency,
-        };
-      }
+        // Initialize groupedMetrics[typeKey][dateKey] if it doesn't exist
+        if (!acc[typeKey][dateKey]) {
+          acc[typeKey][dateKey] = {
+            cost: 0,
+            currency: metric.currency,
+          };
+        }
 
-      groupedMetrics[typeKey][dateKey].cost += metric.cost;
-    });
+        // Increment cost for groupedMetrics[typeKey][dateKey]
+        acc[typeKey][dateKey].cost += metric.cost;
+
+        return acc;
+      },
+      {} as {
+        [key: string]: { [key: string]: { cost: number; currency: string } };
+      },
+    );
 
     return groupedMetrics;
   }

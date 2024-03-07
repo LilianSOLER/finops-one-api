@@ -30,7 +30,7 @@ export class AzureController {
    * @returns Promise that resolves to the Azure costs data.
    */
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
-  async getCostData(): Promise<any> {
+  async getCostData() {
     const data = await this.azureService.getCostData();
     return data;
   }
@@ -40,30 +40,25 @@ export class AzureController {
    * @returns Promise that resolves to the Azure metrics data.
    */
   @Get('metrics')
-  async getAzureMetrics(): Promise<any> {
-    const data = await this.azureService.getAzureMetrics();
-    return data;
+  async getAzureMetrics() {
+    return await this.azureService.getAzureMetrics();
   }
 
   /**
    * Retrieves the Azure metrics grouped by resource group.
    * @returns Promise that resolves to the Azure metrics data grouped by resource group.
    */
-  @Get('metrics-grouped-by-resource-group')
-  async getAzureMetricsGroupedByResourceGroup(): Promise<any> {
-    const data =
-      await this.azureService.getAzureMetricsGroupedByResourceGroupAndDate();
-    return data;
+  @Get('/metrics/sorted/resource-group')
+  async getAzureMetricsGroupedByResourceGroup() {
+    return await this.azureService.getAzureMetricsGroupedByResourceGroupAndDate();
   }
 
   /**
    * Retrieves the Azure metrics grouped by resource type.
    * @returns Promise that resolves to the Azure metrics data grouped by resource type.
    */
-  @Get('metrics-grouped-by-resource-type')
-  async getAzureMetricsGroupedByResourceType(): Promise<any> {
-    const data =
-      await this.azureService.getAzureMetricsGroupedByResourceTypeAndDate();
-    return data;
+  @Get('/metrics/sorted/resource-type')
+  async getAzureMetricsGroupedByResourceType() {
+    return await this.azureService.getAzureMetricsGroupedByResourceTypeAndDate();
   }
 }
