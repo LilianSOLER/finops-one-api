@@ -9,12 +9,16 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { UserModule } from './user/user.module';
 import { ProjectModule } from './project/project.module';
 import { CompanyModule } from './company/company.module';
+import { HttpModule } from '@nestjs/axios';
+import { AzureModule } from './azure/azure.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
+    HttpModule,
     AuthModule,
     PrismaModule,
+    AzureModule,
     AwsModule,
     UserModule,
     ProjectModule,
