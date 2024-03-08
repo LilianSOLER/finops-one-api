@@ -33,6 +33,10 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
+    "@azure/arm-billing": "^4.1.0",
+    "@azure/arm-resources-subscriptions": "^2.1.0",
+    "@azure/identity": "^4.0.1",
+    "@nestjs/axios": "^3.0.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.0.0",
@@ -43,7 +47,7 @@
     "@nestjs/swagger": "^7.2.0",
     "@prisma/client": "^5.9.1",
     "argon2": "^0.31.2",
-    "aws-sdk": "^2.1569.0",
+    "aws-sdk": "^2.1572.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "passport": "^0.7.0",

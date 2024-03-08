@@ -129,3 +129,61 @@ enum CompanyRole {
   ADMIN
   MEMBER
 }
+
+model ResourcesCosts {
+  id     String                 @id
+  name   String
+  type   String
+  values ResourcesCostsValues[]
+}
+
+model ResourcesCostsValues {
+  cost             Float
+  usageDate        DateTime
+  resourceGroup    String
+  resourceType     String
+  currency         String
+  ResourcesCosts   ResourcesCosts @relation(fields: [ResourcesCostsId], references: [id])
+  ResourcesCostsId String
+
+  @@unique([usageDate, resourceGroup, resourceType])
+}
+
+model Budgets {
+  id           String
+  name         String   @id
+  type         String
+  eTag         String?
+  startDate    DateTime
+  endDate      DateTime
+  timeGrain    String
+  amount       Float
+  currentSpend Float
+  unit         String
+  category     String
+}
+
+model Alerts {
+  id                     String
+  name                   String   @id
+  type                   String
+  alertType              String
+  alertCategory          String
+  alertCriteria          String
+  description            String
+  source                 String
+  timeGrainType          String
+  periodStartDate        DateTime
+  triggeredBy            String
+  threshold              Float
+  operator               String
+  amount                 Float
+  unit                   String
+  currentSpend           Float
+  costEntityId           String
+  status                 String
+  creationTime           DateTime
+  closeTime              DateTime
+  modificationTime       DateTime
+  statusModificationTime DateTime
+}
