@@ -26,3 +26,181 @@ enum HerokuInvoiceState {
   SUCCESSFUL
   FAILED
 }
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email          String @unique
+  hashedPassword String
+
+  firstName String?
+  lastName  String?
+
+  role UserRole @default(USER)
+
+  project       Project[]
+  projectMember ProjectMember[]
+
+  company       Company[]
+  companyMember CompanyMember[]
+}
+
+model Project {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId String
+
+  projectMembers ProjectMember[]
+
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role ProjectRole @default(MEMBER)
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId String
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId String
+
+  companyMembers CompanyMember[]
+  project        Project[]
+}
+
+model CompanyMember {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role CompanyRole @default(MEMBER)
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+}
+
+enum ProjectRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+model AwsMetrics {
+  id                    Int       @id @default(autoincrement())
+  timePeriod            DateTime?
+  service               String?
+  amortizedCost         Float?
+  blendedCost           Float?
+  unblendedCost         Float?
+  netUnblendedCost      Float?
+  netAmortizedCost      Float?
+  normalizedUsageAmount Int?
+  usageQuantity         Int?
+  // TODO: Add link to project table
+}
+
+model AwsCredentials {
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime
+  accessKeyId     String   @unique
+  secretAccessKey String
+
+  // TODO : Add account, user ou project for the associated credentials
+}
+
+enum CompanyRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model ResourcesCosts {
+  id     String                 @id
+  name   String
+  type   String
+  values ResourcesCostsValues[]
+}
+
+model ResourcesCostsValues {
+  cost             Float
+  usageDate        DateTime
+  resourceGroup    String
+  resourceType     String
+  currency         String
+  ResourcesCosts   ResourcesCosts @relation(fields: [ResourcesCostsId], references: [id])
+  ResourcesCostsId String
+
+  @@unique([usageDate, resourceGroup, resourceType])
+}
+
+model Budgets {
+  id           String
+  name         String   @id
+  type         String
+  eTag         String?
+  startDate    DateTime
+  endDate      DateTime
+  timeGrain    String
+  amount       Float
+  currentSpend Float
+  unit         String
+  category     String
+}
+
+model Alerts {
+  id                     String
+  name                   String   @id
+  type                   String
+  alertType              String
+  alertCategory          String
+  alertCriteria          String
+  description            String
+  source                 String
+  timeGrainType          String
+  periodStartDate        DateTime
+  triggeredBy            String
+  threshold              Float
+  operator               String
+  amount                 Float
+  unit                   String
+  currentSpend           Float
+  costEntityId           String
+  status                 String
+  creationTime           DateTime
+  closeTime              DateTime
+  modificationTime       DateTime
+  statusModificationTime DateTime
+}
