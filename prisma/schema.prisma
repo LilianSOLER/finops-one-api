@@ -10,6 +10,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model HerokuInvoice {
+  id           String             @id
+  chargesTotal Float // total charges on this invoice
+  creditsTotal Float // total credits on this invoice
+  periodEnd    DateTime // the ending date that the invoice covers
+  periodStart  DateTime // the starting date that this invoice covers
+  state        HerokuInvoiceState // payment status for this invoice (pending, successful, failed)
+  createdAt    DateTime           @default(now()) // when invoice was created
+  updatedAt    DateTime           @updatedAt // when invoice was last updated
+}
+
+enum HerokuInvoiceState {
+  PENDING
+  SUCCESSFUL
+  FAILED
+}
+
 model User {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -101,31 +118,89 @@ enum UserRole {
   USER
 }
 
-model AwsMetrics{
-    id Int @id @default(autoincrement())
-    timePeriod DateTime?
-    service String?
-    amortizedCost Float?
-    blendedCost Float?
-    unblendedCost Float?
-    netUnblendedCost Float?
-    netAmortizedCost Float?
-    normalizedUsageAmount Int?
-    usageQuantity Int?
-    // TODO: Add link to project table
+model AwsMetrics {
+  id                    Int       @id @default(autoincrement())
+  timePeriod            DateTime?
+  service               String?
+  amortizedCost         Float?
+  blendedCost           Float?
+  unblendedCost         Float?
+  netUnblendedCost      Float?
+  netAmortizedCost      Float?
+  normalizedUsageAmount Int?
+  usageQuantity         Int?
+  // TODO: Add link to project table
 }
 
-model AwsCredentials{
-  id Int @id @default(autoincrement())
-  createdAt DateTime
-  accessKeyId String @unique
+model AwsCredentials {
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime
+  accessKeyId     String   @unique
   secretAccessKey String
 
-    // TODO : Add account, user ou project for the associated credentials
+  // TODO : Add account, user ou project for the associated credentials
 }
 
 enum CompanyRole {
   OWNER
   ADMIN
   MEMBER
+}
+
+model ResourcesCosts {
+  id     String                 @id
+  name   String
+  type   String
+  values ResourcesCostsValues[]
+}
+
+model ResourcesCostsValues {
+  cost             Float
+  usageDate        DateTime
+  resourceGroup    String
+  resourceType     String
+  currency         String
+  ResourcesCosts   ResourcesCosts @relation(fields: [ResourcesCostsId], references: [id])
+  ResourcesCostsId String
+
+  @@unique([usageDate, resourceGroup, resourceType])
+}
+
+model Budgets {
+  id           String
+  name         String   @id
+  type         String
+  eTag         String?
+  startDate    DateTime
+  endDate      DateTime
+  timeGrain    String
+  amount       Float
+  currentSpend Float
+  unit         String
+  category     String
+}
+
+model Alerts {
+  id                     String
+  name                   String   @id
+  type                   String
+  alertType              String
+  alertCategory          String
+  alertCriteria          String
+  description            String
+  source                 String
+  timeGrainType          String
+  periodStartDate        DateTime
+  triggeredBy            String
+  threshold              Float
+  operator               String
+  amount                 Float
+  unit                   String
+  currentSpend           Float
+  costEntityId           String
+  status                 String
+  creationTime           DateTime
+  closeTime              DateTime
+  modificationTime       DateTime
+  statusModificationTime DateTime
 }
